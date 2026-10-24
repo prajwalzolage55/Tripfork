@@ -194,16 +194,16 @@ export default function TripLayoutClient({ children }: { children: React.ReactNo
           <div className="flex flex-col flex-1 min-h-0">
             {/* Return to Dashboard + Minimize Toggle */}
             <div className={`shrink-0 flex items-center ${isMinimized ? 'md:flex-col md:gap-3 md:pb-3' : 'justify-between pb-4'} justify-between pb-4 border-b transition-all`} style={{ borderColor: `${COLORS.cream}` }}>
-              <button
-                type="button"
-                onClick={() => router.push('/hub')}
+              <Link
+                href="/hub"
+                prefetch={true}
                 className={`flex items-center ${isMinimized ? 'justify-center p-2.5' : 'gap-2 px-3 py-1.5'} rounded-xl font-bold text-xs transition-all hover:bg-black/5 cursor-pointer`}
                 style={{ color: COLORS.burgundy }}
                 title="Back to All Trips"
               >
                 <ArrowLeft className="w-4 h-4 shrink-0" />
                 {!isMinimized && <span>All Trips</span>}
-              </button>
+              </Link>
 
               <div className="flex items-center">
                 {/* Desktop Toggle to Minimize / Expand */}
@@ -293,13 +293,11 @@ export default function TripLayoutClient({ children }: { children: React.ReactNo
               {NAV_ITEMS.map((item) => {
                 const isActive = activeTab === item.key;
                 return (
-                  <button
+                  <Link
                     key={item.key}
-                    type="button"
-                    onClick={() => {
-                      router.push(getTripPath(tripId, item.key));
-                      setSidebarOpen(false);
-                    }}
+                    href={getTripPath(tripId, item.key)}
+                    prefetch={true}
+                    onClick={() => setSidebarOpen(false)}
                     className={`w-full flex items-center ${
                       isMinimized ? 'justify-center p-3' : 'gap-3 px-3.5 py-2.5'
                     } rounded-xl font-bold text-xs transition-all cursor-pointer ${
@@ -327,7 +325,7 @@ export default function TripLayoutClient({ children }: { children: React.ReactNo
                         )}
                       </div>
                     )}
-                  </button>
+                  </Link>
                 );
               })}
             </div>

@@ -11,7 +11,16 @@ import {
   type LiveWeatherReport,
   OPENWEATHER_API_KEY,
 } from '@/lib/weather';
-import ItineraryMap from '@/components/ItineraryMap';
+import dynamic from 'next/dynamic';
+
+const ItineraryMap = dynamic(() => import('@/components/ItineraryMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full min-h-[350px] rounded-2xl bg-slate-100 animate-pulse flex items-center justify-center text-xs font-semibold text-slate-400">
+      Loading interactive map...
+    </div>
+  ),
+});
 import { KNOWN_COORDINATES } from '@/lib/geocoding';
 import {
   runDigitalTwinSimulation,
@@ -656,14 +665,14 @@ export default function WeatherDigitalTwinPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => router.push(`/trip/${tripId}/itinerary`)}
+            <Link
+              href={`/trip/${tripId}/itinerary`}
+              prefetch={true}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 shadow-xs hover:bg-slate-50 transition cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4 text-slate-500" />
               <span>Itinerary Timeline</span>
-            </button>
+            </Link>
 
             <button
               type="button"

@@ -18,7 +18,16 @@ import type {
 } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { recalculateDaySequence, ALTERNATIVE_LOCATIONS } from '@/lib/itinerary-recalculate';
-import ItineraryMap from '@/components/ItineraryMap';
+import dynamic from 'next/dynamic';
+
+const ItineraryMap = dynamic(() => import('@/components/ItineraryMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full min-h-[350px] rounded-2xl bg-slate-100 animate-pulse flex items-center justify-center text-xs font-semibold text-slate-400">
+      Loading interactive map...
+    </div>
+  ),
+});
 import { geocodeLocation, isSampleActivity } from '@/lib/geocoding';
 import { appendEvent } from '@/lib/ledger';
 import { getDestinationSocialSignals } from '@/lib/social-signals';
@@ -198,70 +207,80 @@ export default function ItineraryPage() {
         location: item.location_id ? locMap[item.location_id] : undefined
       }));
 
-      // Auto-heal items without coordinates (e.g. user items with destination "THAILAND")
+      setDays(loadedDays);
+      setItems(loadedItems);
+      setMembers(loadedMembers);
+
+      // Auto-heal items without coordinates asynchronously in background (non-blocking)
       const destName = tripDoc.exists() ? (tripDoc.data()?.destination || '') : '';
-      const itemsToUpdateCoords: { item: ItineraryItem; lat: number; lng: number }[] = [];
-      for (const item of loadedItems) {
+      const unlocatedItems = loadedItems.filter(item => {
         const hasCoords =
           item.location &&
           typeof item.location.latitude === 'number' &&
           typeof item.location.longitude === 'number' &&
           !isNaN(item.location.latitude) &&
           !isNaN(item.location.longitude);
+        return !hasCoords && item.status === 'active';
+      });
 
-        if (!hasCoords && item.status === 'active') {
-          const locName = item.location?.name || item.location?.address || item.label;
-          const resolved = await geocodeLocation(locName, destName);
-          if (resolved) {
-            item.location = {
-              ...(item.location || {
-                id: item.location_id || crypto.randomUUID(),
-                name: locName,
-                category: 'activity' as const,
-                description: null,
-                address: null,
-                opening_hours: null,
-                recommended_duration: null,
-                entry_fee: 0,
-                estimated_spending: 0,
-                rating: null,
-                best_time_to_visit: null,
-                created_at: new Date().toISOString(),
-              }),
-              latitude: resolved.lat,
-              longitude: resolved.lng,
-            };
-            itemsToUpdateCoords.push({ item, lat: resolved.lat, lng: resolved.lng });
-          }
-        }
-      }
-
-      setDays(loadedDays);
-      setItems(loadedItems);
-      setMembers(loadedMembers);
-
-      // Persist healed coordinates in Firestore asynchronously
-      if (itemsToUpdateCoords.length > 0) {
+      if (unlocatedItems.length > 0) {
         (async () => {
           try {
-            for (const { item, lat, lng } of itemsToUpdateCoords) {
-              const locId = item.location_id || item.location?.id || crypto.randomUUID();
-              await setDoc(doc(db, 'locations', locId), {
-                id: locId,
-                name: item.location?.name || item.label,
-                category: item.type === 'dining' ? 'restaurant' : 'attraction',
-                latitude: lat,
-                longitude: lng,
-              }, { merge: true });
+            const resolutions = await Promise.allSettled(
+              unlocatedItems.map(async (item) => {
+                const locName = item.location?.name || item.location?.address || item.label;
+                const resolved = await geocodeLocation(locName, destName);
+                return { item, resolved };
+              })
+            );
 
-              if (!item.location_id) {
-                await setDoc(doc(db, 'itinerary_items', item.id), {
-                  location_id: locId,
+            const itemsToUpdateCoords: { item: ItineraryItem; lat: number; lng: number }[] = [];
+            resolutions.forEach((res) => {
+              if (res.status === 'fulfilled' && res.value.resolved) {
+                const { item, resolved } = res.value;
+                item.location = {
+                  ...(item.location || {
+                    id: item.location_id || crypto.randomUUID(),
+                    name: item.label,
+                    category: 'activity' as const,
+                    description: null,
+                    address: null,
+                    opening_hours: null,
+                    recommended_duration: null,
+                    entry_fee: 0,
+                    estimated_spending: 0,
+                    rating: null,
+                    best_time_to_visit: null,
+                    created_at: new Date().toISOString(),
+                  }),
+                  latitude: resolved.lat,
+                  longitude: resolved.lng,
+                };
+                itemsToUpdateCoords.push({ item, lat: resolved.lat, lng: resolved.lng });
+              }
+            });
+
+            if (itemsToUpdateCoords.length > 0) {
+              setItems([...loadedItems]);
+              for (const { item, lat, lng } of itemsToUpdateCoords) {
+                const locId = item.location_id || item.location?.id || crypto.randomUUID();
+                await setDoc(doc(db, 'locations', locId), {
+                  id: locId,
+                  name: item.location?.name || item.label,
+                  category: item.type === 'dining' ? 'restaurant' : 'attraction',
+                  latitude: lat,
+                  longitude: lng,
                 }, { merge: true });
+
+                if (!item.location_id) {
+                  await setDoc(doc(db, 'itinerary_items', item.id), {
+                    location_id: locId,
+                  }, { merge: true });
+                }
               }
             }
           } catch (e) {
-            console.warn('Failed to persist healed coordinates:', e);
+            console.warn('Background geocoding error:', e);
           }
         })();
       }

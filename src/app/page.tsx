@@ -281,7 +281,7 @@ export default function Home() {
                 {mounted && user ? (
                   <Link
                     href="/dashboard"
-                    onClick={() => router.push('/dashboard')}
+                    prefetch={true}
                     className="px-5 py-2.5 rounded-full font-bold text-sm text-white transition-all hover:scale-105 shadow-md flex items-center gap-1.5 cursor-pointer relative z-50 bg-slate-900 hover:bg-black"
                     id="nav-dashboard-btn"
                   >
@@ -292,7 +292,7 @@ export default function Home() {
                   <>
                     <Link
                       href="/login"
-                      onClick={() => router.push('/login')}
+                      prefetch={true}
                       className="px-5 py-2.5 rounded-full font-bold text-sm transition-all hover:scale-105 shadow-sm border border-slate-300 bg-white/90 hover:bg-white text-slate-900 cursor-pointer relative z-50"
                       id="nav-login-btn"
                     >
@@ -300,7 +300,7 @@ export default function Home() {
                     </Link>
                     <Link
                       href="/signup"
-                      onClick={() => router.push('/signup')}
+                      prefetch={true}
                       className="px-5 py-2.5 rounded-full text-white font-bold text-sm transition-transform hover:scale-105 shadow-lg flex items-center gap-1.5 cursor-pointer relative z-50 bg-slate-900 hover:bg-black"
                       id="nav-signup-btn"
                     >
@@ -315,7 +315,7 @@ export default function Home() {
                 {mounted && (
                   <Link
                     href={user ? '/dashboard' : '/login'}
-                    onClick={() => router.push(user ? '/dashboard' : '/login')}
+                    prefetch={true}
                     className="px-3 py-1.5 rounded-full font-bold text-xs text-white shadow-sm bg-slate-900"
                   >
                     {user ? 'Dashboard' : 'Log In'}
@@ -426,7 +426,7 @@ export default function Home() {
                 {mounted && user ? (
                   <Link
                     href="/dashboard"
-                    onClick={() => router.push('/dashboard')}
+                    prefetch={true}
                     className="px-8 py-3.5 rounded-full font-bold text-sm text-white shadow-xl hover:scale-105 transition-all flex items-center gap-2 cursor-pointer border border-white/20 bg-slate-900 hover:bg-black"
                     id="hero-center-dashboard-btn"
                   >
@@ -438,7 +438,7 @@ export default function Home() {
                   <>
                     <Link
                       href="/login"
-                      onClick={() => router.push('/login')}
+                      prefetch={true}
                       className="px-7 py-3 rounded-full font-bold text-sm text-white shadow-xl hover:scale-105 transition-all flex items-center gap-2 cursor-pointer border border-white/20 bg-slate-900 hover:bg-black"
                       id="hero-center-login-btn"
                     >
@@ -448,7 +448,7 @@ export default function Home() {
                     </Link>
                     <Link
                       href="/signup"
-                      onClick={() => router.push('/signup')}
+                      prefetch={true}
                       className="px-7 py-3 rounded-full font-bold text-sm bg-white/90 hover:bg-white text-slate-900 shadow-md hover:scale-105 transition-all border border-slate-300 cursor-pointer"
                       id="hero-center-signup-btn"
                     >

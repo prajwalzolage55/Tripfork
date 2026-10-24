@@ -324,15 +324,16 @@ export default function DashboardPage() {
                   )}
                   <div className={`space-y-1 mt-1 ${isMinimized ? 'max-h-36 overflow-y-auto' : 'max-h-48 overflow-y-auto pr-1'}`}>
                     {trips.slice(0, 5).map((t) => (
-                      <div
+                      <Link
                         key={t.id}
-                        onClick={() => router.push(`/trip/${t.id}/itinerary`)}
+                        href={`/trip/${t.id}/itinerary`}
+                        prefetch={true}
                         className={`flex items-center ${isMinimized ? 'justify-center p-2.5' : 'gap-2.5 px-3.5 py-2.5'} rounded-xl text-xs font-bold text-gray-600 hover:text-gray-900 hover:bg-black/5 cursor-pointer truncate transition-colors`}
                         title={t.name}
                       >
                         <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: COLORS.rose }} />
                         {!isMinimized && <span className="truncate">{t.name}</span>}
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -559,10 +560,15 @@ export default function DashboardPage() {
                   key={trip.id}
                   variants={fadeUp}
                   whileHover={{ y: -6, scale: 1.01 }}
-                  onClick={() => router.push(getTripPath(trip.id, 'itinerary'))}
                   className="group relative cursor-pointer p-7 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border bg-white flex flex-col justify-between"
                   style={{ borderColor: COLORS.cream }}
                 >
+                  <Link
+                    href={getTripPath(trip.id, 'itinerary')}
+                    prefetch={true}
+                    className="absolute inset-0 z-10 rounded-2xl"
+                    aria-label={`Open ${trip.name}`}
+                  />
                   <div>
                     <div className="flex items-start justify-between gap-4 mb-3">
                       <h3 className="text-xl font-black tracking-tight text-gray-900 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors">
@@ -595,7 +601,7 @@ export default function DashboardPage() {
                   <div className="pt-4 border-t flex items-center justify-between" style={{ borderColor: `${COLORS.cream}80` }}>
                     <div 
                       onClick={(e) => { e.stopPropagation(); copyCode(trip.invite_code); }}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all hover:brightness-95 border"
+                      className="relative z-20 inline-flex items-center gap-2 px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-all hover:brightness-95 border cursor-pointer"
                       style={{ color: COLORS.burgundy, backgroundColor: `${COLORS.cream}40`, borderColor: `${COLORS.cream}` }}
                       title="Copy Invite Code"
                     >

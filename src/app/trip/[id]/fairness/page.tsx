@@ -443,29 +443,29 @@ export default function FairnessConstitutionPage() {
           </div>
         </div>
 
-        {/* Status Indicators */}
+        {/* Status Indicators (Issue 3 fix: font size >= 12px) */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-indigo-900/60 text-xs">
           <div className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60">
-            <span className="text-slate-400 text-[11px] block">Active Rules</span>
+            <span className="text-slate-400 text-xs block">Active Rules</span>
             <span className="font-mono font-bold text-sm text-emerald-400">
               {rules.filter(r => r.isEnabled).length} / {rules.length} Ratified
             </span>
           </div>
           <div className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60">
-            <span className="text-slate-400 text-[11px] block">Constitution Status</span>
+            <span className="text-slate-400 text-xs block">Constitution Status</span>
             <span className={`font-semibold text-xs inline-flex items-center gap-1 ${hasUnsavedChanges ? 'text-amber-400' : 'text-indigo-300'}`}>
               <CheckCircle2 size={12} />
               {hasUnsavedChanges ? 'Unratified Draft' : 'Legally Ratified'}
             </span>
           </div>
           <div className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60">
-            <span className="text-slate-400 text-[11px] block">Trip Members</span>
+            <span className="text-slate-400 text-xs block">Trip Members</span>
             <span className="font-mono font-bold text-sm text-slate-200">
               {state?.members.length || 0} Travelers
             </span>
           </div>
           <div className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60">
-            <span className="text-slate-400 text-[11px] block">Canonical Spec Rules</span>
+            <span className="text-slate-400 text-xs block">Canonical Spec Rules</span>
             <span className="font-mono font-bold text-sm text-indigo-400">
               Rules 1 – 7 Present
             </span>
@@ -483,16 +483,16 @@ export default function FairnessConstitutionPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition ${
+              className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${
                 activeTab === tab.id
-                  ? 'bg-indigo-600 text-white shadow-md'
+                  ? 'bg-indigo-600 text-white shadow-xs'
                   : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'
               }`}
             >
               <tab.icon size={14} />
               {tab.label}
               {tab.badge && (
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/30 text-indigo-200">
+                <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-black/30 text-indigo-200">
                   {tab.badge}
                 </span>
               )}
@@ -502,7 +502,7 @@ export default function FairnessConstitutionPage() {
       </div>
 
       {saveSuccess && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-medium flex items-center justify-between shadow-sm animate-fadeIn">
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-medium flex items-center justify-between shadow-xs animate-fadeIn">
           <div className="flex items-center gap-2">
             <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
             <span>
@@ -510,7 +510,7 @@ export default function FairnessConstitutionPage() {
               <code className="font-mono bg-emerald-100 px-1 rounded">CONSTITUTION_UPDATED</code> event to the immutable ledger stream.
             </span>
           </div>
-          <span className="text-[11px] text-emerald-700 font-mono">v{events.length}</span>
+          <span className="text-xs text-emerald-700 font-mono">v{events.length}</span>
         </div>
       )}
 
@@ -522,7 +522,7 @@ export default function FairnessConstitutionPage() {
           </div>
           <button
             onClick={handleSaveConstitution}
-            className="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold transition"
+            className="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer"
           >
             Ratify Now
           </button>
@@ -533,9 +533,20 @@ export default function FairnessConstitutionPage() {
       {/* TAB 1: GROUP CONSTITUTION RULES                                          */}
       {/* ═════════════════════════════════════════════════════════════════════════ */}
       {activeTab === 'constitution' && (
-        <div className="space-y-6">
+        <section aria-labelledby="constitution-rules-heading" className="space-y-4">
+          {/* Issue 6 fix: Heading level skipped H1 -> H3 fixed with proper H2 */}
+          <div className="flex items-center justify-between">
+            <h2 id="constitution-rules-heading" className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <ShieldCheck size={18} className="text-indigo-600" />
+              Ratified Group Constitution Rules
+            </h2>
+            <span className="text-xs text-slate-500 font-medium">
+              {filteredRules.length} of {rules.length} rules
+            </span>
+          </div>
+
           {/* Controls Bar: Filter, Search, Add Custom Rule */}
-          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
             {/* Category Filter Pills */}
             <div className="flex flex-wrap gap-1.5 text-xs">
               {[
@@ -549,10 +560,10 @@ export default function FairnessConstitutionPage() {
                 <button
                   key={cat.id}
                   onClick={() => setCategoryFilter(cat.id)}
-                  className={`px-3 py-1.5 rounded-xl font-medium transition ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
                     categoryFilter === cat.id
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                   }`}
                 >
                   {cat.label}
@@ -579,7 +590,7 @@ export default function FairnessConstitutionPage() {
 
               <button
                 onClick={handleResetToDefault}
-                className="px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition"
+                className="px-2.5 py-1.5 text-xs text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
                 title="Reset to default 7 canonical rules"
               >
                 Reset Default
@@ -594,7 +605,7 @@ export default function FairnessConstitutionPage() {
                 key={rule.id}
                 className={`p-5 rounded-2xl border transition-all duration-200 flex flex-col justify-between ${
                   rule.isEnabled
-                    ? 'border-indigo-200 bg-white shadow-sm ring-1 ring-indigo-500/10'
+                    ? 'border-indigo-200 bg-white shadow-xs ring-1 ring-indigo-500/10'
                     : 'border-slate-200 bg-slate-50/70 opacity-60'
                 }`}
               >
@@ -605,11 +616,11 @@ export default function FairnessConstitutionPage() {
                       <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-lg bg-indigo-100 text-indigo-800">
                         Rule {rule.ruleNumber}
                       </span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
                         {rule.category}
                       </span>
                       {!rule.isDefault && (
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800">
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800">
                           Custom
                         </span>
                       )}
@@ -617,6 +628,8 @@ export default function FairnessConstitutionPage() {
 
                     {/* Toggle Switch */}
                     <button
+                      role="switch"
+                      aria-checked={rule.isEnabled}
                       onClick={() => toggleRule(rule.id)}
                       className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
                         rule.isEnabled ? 'bg-indigo-600' : 'bg-slate-300'
@@ -624,7 +637,7 @@ export default function FairnessConstitutionPage() {
                       title={rule.isEnabled ? 'Rule active' : 'Rule disabled'}
                     >
                       <span
-                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-xs ring-0 transition duration-200 ease-in-out ${
                           rule.isEnabled ? 'translate-x-5' : 'translate-x-0'
                         }`}
                       />
@@ -640,7 +653,7 @@ export default function FairnessConstitutionPage() {
                   {/* Configurable Parameters */}
                   {rule.parameters && Object.keys(rule.parameters).length > 0 && (
                     <div className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
-                      <div className="flex items-center gap-1.5 font-bold text-slate-700 text-[11px]">
+                      <div className="flex items-center gap-1.5 font-bold text-slate-700 text-xs">
                         <Sliders size={12} className="text-indigo-600" />
                         <span>Configurable Parameter:</span>
                       </div>
@@ -690,13 +703,13 @@ export default function FairnessConstitutionPage() {
                   )}
                 </div>
 
-                {/* Example Trace Callout */}
+                {/* Example Trace Callout (Issue 4 & 5 fix: font size >= 12px, title case) */}
                 <div className="mt-4 pt-3 border-t border-slate-100">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 mb-1 flex items-center gap-1">
-                    <FileCheck2 size={11} />
+                  <div className="text-xs font-bold text-indigo-600 mb-1 flex items-center gap-1.5">
+                    <FileCheck2 size={13} />
                     <span>Specification Trace Citation:</span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-700 font-mono italic leading-relaxed">
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 font-mono italic leading-relaxed">
                     &ldquo;{rule.exampleTrace}&rdquo;
                   </div>
                 </div>
@@ -709,7 +722,7 @@ export default function FairnessConstitutionPage() {
               No fairness rules match your current filter or search query.
             </div>
           )}
-        </div>
+        </section>
       )}
 
       {/* ═════════════════════════════════════════════════════════════════════════ */}
@@ -824,7 +837,7 @@ export default function FairnessConstitutionPage() {
 
                   {/* Specification Trace String */}
                   <div className="py-4">
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-indigo-400 block mb-1.5">
+                    <span className="text-xs font-bold text-indigo-300 block mb-1.5">
                       Formal Notification Trace Output (Matching Specification Format):
                     </span>
                     <blockquote className="text-sm md:text-base font-serif italic text-indigo-100 leading-relaxed bg-indigo-900/50 p-4 rounded-xl border-l-4 border-indigo-400">
@@ -835,18 +848,18 @@ export default function FairnessConstitutionPage() {
                   {/* Financial Breakdown Summary */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-indigo-900 text-xs">
                     <div>
-                      <span className="text-indigo-400 text-[11px] block">Action Category</span>
+                      <span className="text-indigo-400 text-xs block">Action Category</span>
                       <span className="font-semibold text-slate-200">{simulationResult.actionType}</span>
                     </div>
                     <div>
-                      <span className="text-indigo-400 text-[11px] block">Recalculated Impact</span>
+                      <span className="text-indigo-400 text-xs block">Recalculated Impact</span>
                       <span className="font-mono font-bold text-amber-300">
                         {simulationResult.direction === 'increased' ? '+' : simulationResult.direction === 'decreased' ? '-' : ''}
                         ₹{simulationResult.delta.toLocaleString('en-IN')}
                       </span>
                     </div>
                     <div>
-                      <span className="text-indigo-400 text-[11px] block">Governing Rule Status</span>
+                      <span className="text-indigo-400 text-xs block">Governing Rule Status</span>
                       <span className={`font-semibold ${simulationResult.rule.isEnabled ? 'text-emerald-400' : 'text-blue-500'}`}>
                         {simulationResult.rule.isEnabled ? '✓ Enforced in Constitution' : '⚠ Rule is currently disabled'}
                       </span>
@@ -890,7 +903,7 @@ export default function FairnessConstitutionPage() {
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-50 border border-indigo-200 text-xs text-indigo-900 font-bold">
                   <span>Fairness Score:</span>
                   <span className="font-mono text-indigo-700">{shapleyResult.fairnessScore}%</span>
-                  <span className="text-[10px] text-indigo-500">({shapleyResult.method} solver)</span>
+                  <span className="text-xs text-indigo-500">({shapleyResult.method} solver)</span>
                 </div>
               )}
             </div>
@@ -900,7 +913,7 @@ export default function FairnessConstitutionPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b border-slate-200 text-slate-500 font-semibold uppercase text-[10px] tracking-wider">
+                    <tr className="border-b border-slate-200 text-slate-500 font-semibold text-xs tracking-wider">
                       <th className="pb-2.5">Participant</th>
                       <th className="pb-2.5 text-right">Shapley Fair Share</th>
                       <th className="pb-2.5 text-right">Naive Equal Split</th>

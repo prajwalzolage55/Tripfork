@@ -133,10 +133,27 @@ export async function joinTripByCode(code: string, userId: string, displayName: 
   return tripId;
 }
 
-export async function getTrip(tripId: string) {
+const tripMemoryCache = new Map<string, { trip: Trip; cachedAt: number }>();
+const TRIP_CACHE_TTL_MS = 30000; // 30 seconds cache for instant tab transitions
+
+export function invalidateTripCache(tripId?: string) {
+  if (tripId) {
+    tripMemoryCache.delete(tripId);
+  } else {
+    tripMemoryCache.clear();
+  }
+}
+
+export async function getTrip(tripId: string): Promise<Trip | null> {
+  const cached = tripMemoryCache.get(tripId);
+  if (cached && Date.now() - cached.cachedAt < TRIP_CACHE_TTL_MS) {
+    return cached.trip;
+  }
   const tripDoc = await getDoc(doc(db, 'trips', tripId));
   if (!tripDoc.exists()) return null;
-  return { id: tripDoc.id, ...tripDoc.data() } as Trip;
+  const trip = { id: tripDoc.id, ...tripDoc.data() } as Trip;
+  tripMemoryCache.set(tripId, { trip, cachedAt: Date.now() });
+  return trip;
 }
 
 export async function saveTripPreferences(prefs: any) {
