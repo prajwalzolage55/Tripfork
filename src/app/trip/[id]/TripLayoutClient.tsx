@@ -231,9 +231,9 @@ export default function TripLayoutClient({ children }: { children: React.ReactNo
             <div className={`shrink-0 pt-4 pb-4 border-b ${isMinimized ? 'text-center' : ''}`} style={{ borderColor: `${COLORS.cream}` }}>
               {!isMinimized ? (
                 <div>
-                  <h1 className="text-lg font-black tracking-tight leading-tight truncate text-gray-900" title={trip?.name}>
+                  <h2 className="text-lg font-black tracking-tight leading-tight truncate text-gray-900" title={trip?.name}>
                     {trip?.name || 'Trip Overview'}
-                  </h1>
+                  </h2>
                   {(trip?.destination || weather?.current.city_name) && (
                     <div className="flex items-center gap-1.5 text-xs font-semibold mt-1 text-gray-500 truncate">
                       <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: COLORS.rose }} />
@@ -242,7 +242,7 @@ export default function TripLayoutClient({ children }: { children: React.ReactNo
                   )}
                   <Link
                     href={`/trip/${tripId}/weather`}
-                    className="inline-flex items-center gap-1.5 text-[10px] font-extrabold mt-2 px-2.5 py-1 rounded-md bg-amber-50/90 hover:bg-amber-100 text-amber-950 border border-amber-200/90 shadow-2xs transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold mt-2 px-2.5 py-1 rounded-lg bg-amber-50/90 hover:bg-amber-100 text-amber-950 border border-amber-200/90 shadow-2xs transition-colors cursor-pointer"
                     title="View Weather-Driven Digital Twin"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
