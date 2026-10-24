@@ -13,10 +13,8 @@ import {
   type PaymentState,
   type RoutedTransfer,
   type SettlementRoutingPlan,
-  type RawDebtEdge,
   type PendingVendorRefund,
   type DisputedDebtItem,
-  type OrganizerFrontedItem,
   type NonCashVoucher,
   PAYMENT_STATE_META,
   getPaymentStateMeta,
@@ -25,22 +23,10 @@ import {
 } from '@/lib/ledger';
 import {
   ArrowRightLeft, ArrowRight, ShieldCheck, CheckCircle2, Clock, AlertCircle,
-  Building2, Ticket, HelpCircle, ExternalLink, QrCode, DollarSign,
-  TrendingDown, Layers, Sparkles, RefreshCw, Plus, X, FileText, User,
-  Check, Info, ChevronRight, Filter, Eye, Zap, Loader2
+  Building2, Ticket, ExternalLink, QrCode, DollarSign,
+  TrendingDown, Layers, Sparkles, Plus, X,
+  Check, Info, Zap, Loader2
 } from 'lucide-react';
-
-const COLORS = {
-  burgundy: '#0f172a',
-  burgundyLight: '#1e293b',
-  burgundyPale: '#f1f5f9',
-  cream: '#f8fafc',
-  creamDark: '#e2e8f0',
-  offWhite: '#ffffff',
-  rose: '#2563eb',
-  rosePale: '#eff6ff',
-  deepWine: '#0f172a',
-};
 
 export default function SettlementRouterPage() {
   const tripId = useTripId();
@@ -190,93 +176,124 @@ export default function SettlementRouterPage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '1rem', color: COLORS.burgundy }}>
-        <Loader2 className="animate-spin" size={36} style={{ color: COLORS.rose }} />
-        <p style={{ fontWeight: 600, fontSize: '0.875rem' }}>Running Minimum-Transaction Router...</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-slate-900">
+        <Loader2 className="animate-spin text-blue-600" size={36} />
+        <p className="font-semibold text-sm text-slate-600">Running Minimum-Transaction Router...</p>
       </div>
     );
   }
 
   const displayedTransfers = plan?.transfers.filter(t => filterState === 'all' || t.state === filterState) || [];
 
-  const tabStyle = (id: string) => ({
-    display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 0.875rem',
-    borderRadius: '0.75rem', fontSize: '0.7rem', fontWeight: 700,
-    background: activeTab === id ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.1)',
-    color: activeTab === id ? COLORS.burgundy : 'rgba(255,255,255,0.8)',
-    border: activeTab === id ? 'none' : '1px solid rgba(255,255,255,0.15)',
-    cursor: 'pointer', transition: 'all 0.2s',
-  });
-
   return (
-    <div style={{ maxWidth: '72rem', margin: '0 auto', paddingBottom: '5rem' }}>
+    <div className="max-w-6xl mx-auto pb-20 space-y-6">
       {/* ─── Hero Header ─── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        style={{
-          background: `linear-gradient(135deg, ${COLORS.burgundy} 0%, ${COLORS.burgundyLight} 50%, ${COLORS.rose} 100%)`,
-          borderRadius: '1.25rem', padding: '2rem', color: 'white', position: 'relative', overflow: 'hidden', marginBottom: '1.5rem',
-        }}
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-white p-6 sm:p-8 shadow-sm border border-slate-800"
       >
-        <div style={{ position: 'absolute', top: 0, right: 0, width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%)', borderRadius: '50%' }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex justify-between items-start gap-4 flex-wrap relative z-10">
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem 0.75rem', borderRadius: '9999px', background: 'rgba(255,255,255,0.15)', fontSize: '0.7rem', fontWeight: 700, marginBottom: '0.75rem', border: '1px solid rgba(255,255,255,0.2)' }}>
-              <ArrowRightLeft size={13} /> Section 7 · Graph-Simplification Settlement Router
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-slate-200 border border-white/20 text-xs font-bold mb-3">
+              <ArrowRightLeft size={14} />
+              Section 7 · Graph-Simplification Settlement Router
             </div>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.2 }}>Minimum-Transaction Graph Router</h1>
-            <p style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.8rem', marginTop: '0.5rem', maxWidth: '36rem', lineHeight: 1.6 }}>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white leading-tight">
+              Minimum-Transaction Graph Router
+            </h1>
+            <p className="text-slate-300 text-xs sm:text-sm mt-2 max-w-2xl leading-relaxed">
               Models obligations as a weighted directed graph and executes debt netting — factoring in-flight vendor refunds to minimize actual transfers.
             </p>
           </div>
         </div>
 
         {plan && (
-          <div style={{ marginTop: '1.25rem', padding: '1.25rem', borderRadius: '1rem', background: 'linear-gradient(135deg, rgba(254, 243, 199, 0.9) 0%, rgba(253, 230, 138, 0.7) 100%)', border: '1px solid rgba(245, 158, 11, 0.3)', display: 'flex', alignItems: 'center', gap: '1rem', color: '#92400e' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(245,158,11,0.2)' }}>
-              <Zap size={20} style={{ color: '#f59e0b' }} />
+          <div className="mt-5 p-4 rounded-xl bg-amber-500/10 border border-amber-400/20 text-amber-200 flex items-center gap-3 relative z-10">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0 border border-amber-400/30">
+              <Zap size={20} />
             </div>
             <div>
-              <div style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#b45309' }}>Router Advisory</div>
-              <div style={{ fontSize: '1.05rem', fontWeight: 800, margin: '0.125rem 0' }}>"{plan.routerAdvisory}"</div>
-              <div style={{ fontSize: '0.75rem', color: '#78350f' }}>
-                {plan.savingsCount > 0 ? <span>Eliminated <strong>{plan.savingsCount} redundant transfers</strong> ({plan.savingsPercent}% reduction).</span> : <span>Optimal minimal-path graph calculated.</span>}
+              <div className="text-xs font-bold uppercase tracking-wider text-amber-400">Router Advisory</div>
+              <div className="text-sm sm:text-base font-bold text-white my-0.5">"{plan.routerAdvisory}"</div>
+              <div className="text-xs text-amber-200/90">
+                {plan.savingsCount > 0 ? (
+                  <span>Eliminated <strong className="text-white font-bold">{plan.savingsCount} redundant transfers</strong> ({plan.savingsPercent}% reduction).</span>
+                ) : (
+                  <span>Optimal minimal-path graph calculated.</span>
+                )}
               </div>
             </div>
           </div>
         )}
 
         {actionSuccessMsg && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#065f46', borderRadius: '0.75rem', fontSize: '0.8rem', fontWeight: 600, marginTop: '1rem' }}>
-            <CheckCircle2 size={16} /> {actionSuccessMsg}
+          <div className="flex items-center gap-2 p-3 bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 rounded-xl text-xs sm:text-sm font-semibold mt-4 relative z-10">
+            <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+            <span>{actionSuccessMsg}</span>
           </div>
         )}
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-          <button onClick={() => setActiveTab('router')} style={tabStyle('router')}><ArrowRightLeft size={13} /> Live Settlement Plan</button>
-          <button onClick={() => setActiveTab('graph_view')} style={tabStyle('graph_view')}><Layers size={13} /> Raw vs Netted Graph</button>
-          <button onClick={() => setActiveTab('benchmark')} style={tabStyle('benchmark')}><Sparkles size={13} /> Section 7 Benchmark</button>
+        {/* Tab Buttons (Button Style: Glass Tab Pill) */}
+        <div className="flex flex-wrap gap-2 mt-5 pt-4 border-t border-white/10 relative z-10">
+          <button
+            onClick={() => setActiveTab('router')}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'router'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'
+            }`}
+          >
+            <ArrowRightLeft size={14} /> Live Settlement Plan
+          </button>
+          <button
+            onClick={() => setActiveTab('graph_view')}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'graph_view'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'
+            }`}
+          >
+            <Layers size={14} /> Raw vs Netted Graph
+          </button>
+          <button
+            onClick={() => setActiveTab('benchmark')}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'benchmark'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'bg-white/10 text-white hover:bg-white/20 border border-white/10'
+            }`}
+          >
+            <Sparkles size={14} /> Section 7 Benchmark
+          </button>
         </div>
       </motion.div>
 
-      {/* Metrics Bar */}
+      {/* Metrics Bar (Fixed Issue 5: No all-caps on Raw Pairwise Debts) */}
       {plan && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {[
-            { label: 'Raw Pairwise Debts', value: plan.rawTransferCount, icon: TrendingDown, color: COLORS.burgundyLight },
-            { label: 'Optimized Transfers', value: plan.optimizedTransferCount, icon: ArrowRightLeft, color: '#059669', bg: '#ecfdf5', border: '#a7f3d0' },
-            { label: 'Transactions Saved', value: plan.savingsCount, icon: Zap, color: '#d97706' },
-            { label: 'Instant Pay Now', value: `₹${plan.totalPayNowAmount.toLocaleString()}`, icon: DollarSign, color: '#059669' },
-            { label: 'Pending Credits', value: `₹${plan.totalPendingRefundAmount.toLocaleString()}`, icon: Building2, color: '#0891b2' },
+            { label: 'Raw Pairwise Debts', value: plan.rawTransferCount, icon: TrendingDown, color: 'text-slate-700', bg: 'bg-white' },
+            { label: 'Optimized Transfers', value: plan.optimizedTransferCount, icon: ArrowRightLeft, color: 'text-emerald-700', bg: 'bg-emerald-50/50', border: 'border-emerald-200' },
+            { label: 'Transactions Saved', value: plan.savingsCount, icon: Zap, color: 'text-amber-800', bg: 'bg-white' },
+            { label: 'Instant Pay Now', value: `₹${plan.totalPayNowAmount.toLocaleString('en-IN')}`, icon: DollarSign, color: 'text-emerald-700', bg: 'bg-white' },
+            { label: 'Pending Credits', value: `₹${plan.totalPendingRefundAmount.toLocaleString('en-IN')}`, icon: Building2, color: 'text-blue-700', bg: 'bg-white' },
           ].map(m => (
-            <div key={m.label} style={{ padding: '1rem', borderRadius: '1rem', background: m.bg || 'white', border: `1px solid ${m.border || COLORS.cream}`, boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: COLORS.burgundy }}>{m.label}</span>
-                <m.icon size={14} style={{ color: m.color }} />
+            <div
+              key={m.label}
+              className={`p-4 rounded-xl border ${m.border || 'border-slate-200'} ${m.bg} shadow-2xs`}
+            >
+              <div className="flex justify-between items-center mb-2">
+                {/* Sentence case avoids long all-caps readability issues */}
+                <span className="text-xs font-semibold text-slate-600">{m.label}</span>
+                <m.icon size={15} className={m.color} />
               </div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: m.color === COLORS.burgundyLight ? COLORS.burgundy : m.color }}>{m.value}</div>
+              <div className={`text-xl sm:text-2xl font-black ${m.color}`}>
+                {m.value}
+              </div>
             </div>
           ))}
         </div>
@@ -285,67 +302,91 @@ export default function SettlementRouterPage() {
       {/* ─── TAB 1: LIVE SETTLEMENT PLAN ─── */}
       <AnimatePresence mode="wait">
         {activeTab === 'router' && plan && (
-          <motion.div key="router" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.3 }}>
-            
-            {/* Filter and Actions Bar */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
+          <motion.div
+            key="router"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6"
+          >
+            {/* Filter and Actions Bar (Button Style: Secondary Pill Buttons) */}
+            <div className="flex justify-between items-center flex-wrap gap-3">
+              <div className="flex flex-wrap gap-1.5">
                 <button
                   onClick={() => setFilterState('all')}
-                  style={{
-                    padding: '0.4rem 0.875rem', borderRadius: '0.75rem', fontSize: '0.7rem', fontWeight: 700,
-                    background: filterState === 'all' ? COLORS.burgundy : 'white',
-                    color: filterState === 'all' ? 'white' : COLORS.burgundy, border: `1px solid ${COLORS.cream}`, cursor: 'pointer'
-                  }}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+                    filterState === 'all'
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                  }`}
                 >
                   All ({plan.transfers.length + plan.vendorObligations.length + plan.disputedItems.length + plan.organizerItems.length + plan.vouchers.length})
                 </button>
                 {(Object.keys(PAYMENT_STATE_META) as PaymentState[]).map(ps => {
                   const meta = getPaymentStateMeta(ps);
                   const count = plan.stateSummary[ps] || 0;
+                  const isSelected = filterState === ps;
                   return (
                     <button
-                      key={ps} onClick={() => setFilterState(ps)}
-                      style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
-                        padding: '0.4rem 0.875rem', borderRadius: '0.75rem', fontSize: '0.7rem', fontWeight: 700,
-                        background: filterState === ps ? COLORS.burgundy : 'white',
-                        color: filterState === ps ? 'white' : COLORS.burgundy, border: `1px solid ${COLORS.cream}`, cursor: 'pointer'
-                      }}
+                      key={ps}
+                      onClick={() => setFilterState(ps)}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+                        isSelected
+                          ? 'bg-slate-900 text-white border-slate-900'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      }`}
                     >
-                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: meta.dotColor }} />
-                      {meta.label} <span style={{ padding: '0.1rem 0.4rem', borderRadius: '9999px', background: filterState === ps ? 'rgba(255,255,255,0.2)' : COLORS.burgundyPale, fontSize: '0.65rem' }}>{count}</span>
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: meta.dotColor }} />
+                      <span>{meta.label}</span>
+                      <span className={`px-1.5 py-0.2 rounded-full text-xs ${isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                        {count}
+                      </span>
                     </button>
                   );
                 })}
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+
+              {/* Action Buttons (Button Style: Secondary Action Button) */}
+              <div className="flex gap-2">
                 {[
                   { label: 'Vendor Refund', icon: Plus, action: () => setShowAddRefundModal(true) },
                   { label: 'Flag Dispute', icon: AlertCircle, action: () => setShowAddDisputeModal(true) },
                   { label: 'Voucher', icon: Ticket, action: () => setShowAddVoucherModal(true) },
                 ].map(btn => (
-                  <button key={btn.label} onClick={btn.action} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.45rem 0.875rem', borderRadius: '0.75rem', background: 'white', color: COLORS.burgundy, fontSize: '0.7rem', fontWeight: 700, border: `1px solid ${COLORS.cream}`, cursor: 'pointer' }}>
+                  <button
+                    key={btn.label}
+                    onClick={btn.action}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 text-xs font-semibold transition-colors cursor-pointer"
+                  >
                     <btn.icon size={13} /> {btn.label}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Reference Guide */}
-            <div style={{ background: 'white', borderRadius: '1rem', padding: '1.25rem', border: `1px solid ${COLORS.cream}`, marginBottom: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.7rem', fontWeight: 800, color: COLORS.burgundyLight, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.875rem' }}>
-                <Info size={14} /> Section 7 Payment State Classification Reference
+            {/* Reference Guide (Fixed Issue 6: Body text >= 12px) */}
+            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">
+                <Info size={14} className="text-blue-600" /> Section 7 Payment State Classification Reference
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {(Object.keys(PAYMENT_STATE_META) as PaymentState[]).map(ps => {
                   const meta = getPaymentStateMeta(ps);
                   return (
-                    <div key={ps} style={{ padding: '0.875rem', borderRadius: '0.75rem', border: `1px solid ${meta.borderLight}`, background: meta.bgLight }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', marginBottom: '0.375rem', fontSize: '0.75rem', fontWeight: 800, color: meta.textColor }}>
-                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: meta.dotColor }} /> {meta.label}
+                    <div
+                      key={ps}
+                      className="p-3.5 rounded-xl border text-xs"
+                      style={{ borderColor: meta.borderLight, backgroundColor: meta.bgLight }}
+                    >
+                      <div className="flex items-center gap-1.5 font-bold mb-1 text-slate-900">
+                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: meta.dotColor }} />
+                        <span>{meta.label}</span>
                       </div>
-                      <p style={{ fontSize: '0.7rem', color: COLORS.burgundyLight, margin: 0, lineHeight: 1.5 }}>{meta.description}</p>
+                      {/* Fixed Issue 6: Body text changed from 0.7rem (11px) to text-xs (12px) */}
+                      <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                        {meta.description}
+                      </p>
                     </div>
                   );
                 })}
@@ -353,81 +394,125 @@ export default function SettlementRouterPage() {
             </div>
 
             {/* Transfers List */}
-            <div style={{ marginBottom: '2rem' }}>
-              <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: COLORS.burgundy, marginBottom: '0.25rem' }}>Routed Transfers ({displayedTransfers.length})</h2>
-              <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '1.25rem' }}>{filterState === 'all' ? 'All simplified graph transfers' : `Filtered by: ${getPaymentStateMeta(filterState).label}`}</p>
-              
+            <section aria-labelledby="transfers-heading">
+              <div className="mb-4">
+                <h2 id="transfers-heading" className="text-lg font-bold text-slate-900">
+                  Routed Transfers ({displayedTransfers.length})
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  {filterState === 'all' ? 'All simplified graph transfers' : `Filtered by: ${getPaymentStateMeta(filterState).label}`}
+                </p>
+              </div>
+
               {displayedTransfers.length === 0 ? (
-                <div style={{ padding: '3rem', textAlign: 'center', background: 'white', borderRadius: '1rem', border: `1px dashed ${COLORS.cream}` }}>
-                  <CheckCircle2 size={36} style={{ color: '#10b981', margin: '0 auto 0.75rem' }} />
-                  <p style={{ fontSize: '0.85rem', color: '#666', fontWeight: 600 }}>No transfers match this state.</p>
+                <div className="p-12 text-center bg-white rounded-2xl border border-dashed border-slate-200">
+                  <CheckCircle2 size={36} className="text-emerald-500 mx-auto mb-2" />
+                  <p className="text-sm font-semibold text-slate-600">No transfers match this state.</p>
                 </div>
               ) : (
-                <div style={{ display: 'grid', gap: '1rem' }}>
+                <div className="grid gap-3">
                   {displayedTransfers.map(t => {
                     const meta = getPaymentStateMeta(t.state);
                     return (
-                      <div key={t.id} style={{ background: t.settled ? '#f8fafc' : 'white', opacity: t.settled ? 0.75 : 1, border: `1px solid ${COLORS.cream}`, borderRadius: '1rem', padding: '1.25rem', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderBottom: `1px solid ${COLORS.cream}`, paddingBottom: '1rem', marginBottom: '1rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                            <div style={{ textAlign: 'center' }}>
-                              <div style={{ width: 40, height: 40, borderRadius: '50%', background: COLORS.burgundyPale, color: COLORS.burgundy, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1rem', margin: '0 auto 0.25rem' }}>{t.fromMemberName.charAt(0)}</div>
-                              <div style={{ fontSize: '0.75rem', fontWeight: 700 }}>{t.fromMemberName}</div>
-                              <div style={{ fontSize: '0.6rem', color: '#888', textTransform: 'uppercase', fontWeight: 700 }}>Debtor</div>
+                      <div
+                        key={t.id}
+                        className={`rounded-2xl p-5 border border-slate-200 transition-all ${
+                          t.settled ? 'bg-slate-50/70 opacity-80' : 'bg-white shadow-2xs'
+                        }`}
+                      >
+                        <div className="flex justify-between items-center flex-wrap gap-4 border-b border-slate-100 pb-4 mb-4">
+                          <div className="flex items-center gap-4">
+                            <div className="text-center">
+                              <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-900 flex items-center justify-center font-bold text-sm mx-auto mb-1">
+                                {t.fromMemberName.charAt(0)}
+                              </div>
+                              <div className="text-xs font-bold text-slate-900">{t.fromMemberName}</div>
+                              <div className="text-xs font-semibold text-slate-400">Debtor</div>
                             </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 1rem' }}>
-                              <span style={{ fontSize: '1.25rem', fontWeight: 900, color: COLORS.burgundy }}>₹{t.amount.toLocaleString()}</span>
-                              <ArrowRight size={16} style={{ color: '#10b981', margin: '0.25rem 0' }} />
-                              <span style={{ fontSize: '0.6rem', color: '#aaa', textTransform: 'uppercase', fontWeight: 600 }}>Transfers To</span>
+                            <div className="flex flex-col items-center px-2">
+                              <span className="text-lg font-black text-slate-900">₹{t.amount.toLocaleString('en-IN')}</span>
+                              <ArrowRight size={16} className="text-emerald-600 my-1" />
+                              <span className="text-xs text-slate-400">Transfers To</span>
                             </div>
-                            <div style={{ textAlign: 'center' }}>
-                              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#ecfdf5', color: '#047857', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1rem', margin: '0 auto 0.25rem' }}>{t.toMemberName.charAt(0)}</div>
-                              <div style={{ fontSize: '0.75rem', fontWeight: 700 }}>{t.toMemberName}</div>
-                              <div style={{ fontSize: '0.6rem', color: '#059669', textTransform: 'uppercase', fontWeight: 700 }}>Creditor</div>
+                            <div className="text-center">
+                              <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-800 flex items-center justify-center font-bold text-sm mx-auto mb-1 border border-emerald-200">
+                                {t.toMemberName.charAt(0)}
+                              </div>
+                              <div className="text-xs font-bold text-slate-900">{t.toMemberName}</div>
+                              <div className="text-xs font-semibold text-emerald-700">Creditor</div>
                             </div>
                           </div>
-                          <div style={{ padding: '0.4rem 0.875rem', borderRadius: '9999px', background: meta.bgLight, border: `1px solid ${meta.borderLight}`, color: meta.textColor, fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
-                            <span style={{ width: 8, height: 8, borderRadius: '50%', background: meta.dotColor }} /> {meta.label}
+
+                          <div
+                            className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 border"
+                            style={{ backgroundColor: meta.bgLight, borderColor: meta.borderLight, color: meta.textColor }}
+                          >
+                            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: meta.dotColor }} />
+                            <span>{meta.label}</span>
                           </div>
                         </div>
 
-                        <div style={{ padding: '0.875rem', borderRadius: '0.75rem', background: COLORS.burgundyPale + '40', border: `1px solid ${COLORS.cream}`, marginBottom: '1rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.7rem', fontWeight: 700, color: meta.textColor, marginBottom: '0.25rem' }}>
-                            <Info size={13} /> Router Rationale:
+                        <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 mb-4 text-xs">
+                          <div className="flex items-center gap-1.5 font-bold mb-1" style={{ color: meta.textColor }}>
+                            <Info size={14} /> Router Rationale:
                           </div>
-                          <p style={{ fontSize: '0.75rem', color: COLORS.burgundy, margin: 0 }}>{t.stateReason}</p>
+                          <p className="text-xs text-slate-700 leading-relaxed">{t.stateReason}</p>
                           {t.pendingRefund && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.625rem', borderRadius: '0.5rem', background: '#fffbeb', border: '1px solid #fde68a', color: '#92400e', fontSize: '0.75rem', marginTop: '0.625rem' }}>
-                              <Building2 size={14} style={{ color: '#d97706' }} />
-                              <strong>Blocking Refund:</strong> {t.pendingRefund.vendorName} owes ₹{t.pendingRefund.amount.toLocaleString()} to {t.pendingRefund.recipientName} ({t.pendingRefund.reason}).
+                            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs mt-2.5">
+                              <Building2 size={14} className="text-amber-600 shrink-0" />
+                              <span>
+                                <strong>Blocking Refund:</strong> {t.pendingRefund.vendorName} owes ₹{t.pendingRefund.amount.toLocaleString('en-IN')} to {t.pendingRefund.recipientName} ({t.pendingRefund.reason}).
+                              </span>
                             </div>
                           )}
                         </div>
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                        <div className="flex justify-between items-center flex-wrap gap-3">
                           {t.settled ? (
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', fontWeight: 700, color: '#059669' }}><Check size={14} /> Settled in Ledger</span>
+                            <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700">
+                              <Check size={14} /> Settled in Ledger
+                            </span>
                           ) : (
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', fontWeight: 600, color: '#d97706' }}><Clock size={14} /> Pending Transfer</span>
+                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-800">
+                              <Clock size={14} /> Pending Transfer
+                            </span>
                           )}
-                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+
+                          <div className="flex gap-2">
                             {t.state === 'pay_now' && !t.settled && (
                               <>
                                 {t.upiLink && (
-                                  <a href={t.upiLink} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 1rem', borderRadius: '0.625rem', background: '#10b981', color: 'white', fontSize: '0.75rem', fontWeight: 700, textDecoration: 'none' }}>
+                                  <a
+                                    href={t.upiLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors"
+                                  >
                                     <ExternalLink size={13} /> Pay via UPI
                                   </a>
                                 )}
-                                <button onClick={() => setSelectedQRTransfer(t)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: '0.625rem', background: 'white', border: `1px solid ${COLORS.cream}`, cursor: 'pointer' }}><QrCode size={14} /></button>
+                                <button
+                                  onClick={() => setSelectedQRTransfer(t)}
+                                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer"
+                                  title="View QR Code"
+                                >
+                                  <QrCode size={15} />
+                                </button>
                               </>
                             )}
                             {t.state === 'pay_after_refund' && !t.settled && (
-                              <button onClick={() => { if (t.pendingRefund) handleRecordRefundReceived(t.pendingRefund); }} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 1rem', borderRadius: '0.625rem', background: '#fef3c7', border: '1px solid #fde68a', color: '#b45309', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}>
+                              <button
+                                onClick={() => { if (t.pendingRefund) handleRecordRefundReceived(t.pendingRefund); }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-200 text-xs font-bold transition-colors cursor-pointer"
+                              >
                                 <Building2 size={13} /> Simulate Refund Received
                               </button>
                             )}
                             {!t.settled && (
-                              <button onClick={() => handleMarkAsPaid(t)} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 1rem', borderRadius: '0.625rem', background: 'white', border: `1px solid ${COLORS.cream}`, color: COLORS.burgundy, fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}>
+                              <button
+                                onClick={() => handleMarkAsPaid(t)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-900 text-xs font-bold transition-colors cursor-pointer"
+                              >
                                 <Check size={13} /> Mark Paid
                               </button>
                             )}
@@ -438,35 +523,59 @@ export default function SettlementRouterPage() {
                   })}
                 </div>
               )}
-            </div>
+            </section>
 
             {/* Auxiliary Lists */}
             {(plan.vendorObligations.length > 0 || plan.disputedItems.length > 0 || plan.organizerItems.length > 0 || plan.vouchers.length > 0) && (
-              <div style={{ display: 'grid', gap: '1.25rem' }}>
+              <div className="grid gap-4">
                 {[
-                  { key: 'vendor', title: 'Vendor Owes (External Parties)', items: plan.vendorObligations, dot: '#06b6d4', badgeClass: { bg: '#cffafe', color: '#0891b2' } },
-                  { key: 'dispute', title: 'Provisionally Disputed', items: plan.disputedItems, dot: '#f43f5e', badgeClass: { bg: '#ffe4e6', color: '#e11d48' } },
-                  { key: 'organizer', title: 'Covered by Organizer', items: plan.organizerItems, dot: '#6366f1', badgeClass: { bg: '#e0e7ff', color: '#4f46e5' } },
-                  { key: 'voucher', title: 'Non-Cash Vouchers', items: plan.vouchers, dot: '#a855f7', badgeClass: { bg: '#f3e8ff', color: '#9333ea' } },
+                  { key: 'vendor', title: 'Vendor Owes (External Parties)', items: plan.vendorObligations, dot: '#06b6d4', badgeClass: 'bg-cyan-50 text-cyan-800 border-cyan-200' },
+                  { key: 'dispute', title: 'Provisionally Disputed', items: plan.disputedItems, dot: '#f43f5e', badgeClass: 'bg-rose-50 text-rose-800 border-rose-200' },
+                  { key: 'organizer', title: 'Covered by Organizer', items: plan.organizerItems, dot: '#6366f1', badgeClass: 'bg-indigo-50 text-indigo-800 border-indigo-200' },
+                  { key: 'voucher', title: 'Non-Cash Vouchers', items: plan.vouchers, dot: '#a855f7', badgeClass: 'bg-purple-50 text-purple-800 border-purple-200' },
                 ].filter(s => s.items.length > 0).map(section => (
-                  <div key={section.key} style={{ background: 'white', borderRadius: '1rem', padding: '1.25rem', border: `1px solid ${COLORS.cream}` }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                      <h3 style={{ fontSize: '1rem', fontWeight: 800, color: COLORS.burgundy, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ width: 10, height: 10, borderRadius: '50%', background: section.dot }} /> {section.title}
+                  <div key={section.key} className="bg-white rounded-2xl p-5 border border-slate-200">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: section.dot }} />
+                        {section.title}
                       </h3>
-                      <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: 600 }}>{section.items.length} items</span>
+                      <span className="text-xs text-slate-500 font-semibold">{section.items.length} items</span>
                     </div>
-                    <div style={{ display: 'grid', gap: '0.75rem' }}>
+                    <div className="grid gap-2.5">
                       {section.items.map((item: any) => (
-                        <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', padding: '0.875rem 1rem', borderRadius: '0.75rem', background: COLORS.burgundyPale + '30', border: `1px solid ${COLORS.cream}` }}>
+                        <div
+                          key={item.id}
+                          className="flex justify-between items-center flex-wrap gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs"
+                        >
                           <div>
-                            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: COLORS.burgundy, marginBottom: '0.125rem' }}>{item.vendorName || item.expenseLabel || item.label || item.issuer}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#666' }}>Amount: ₹{item.amount || item.disputedAmount || item.value} · {item.reason || item.notes}</div>
+                            <div className="font-bold text-slate-900 mb-0.5">
+                              {item.vendorName || item.expenseLabel || item.label || item.issuer}
+                            </div>
+                            <div className="text-slate-600">
+                              Amount: ₹{item.amount || item.disputedAmount || item.value} · {item.reason || item.notes}
+                            </div>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                            <span style={{ padding: '0.2rem 0.6rem', borderRadius: '9999px', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', ...section.badgeClass }}>{section.title}</span>
-                            {section.key === 'vendor' && <button onClick={() => handleRecordRefundReceived(item)} style={{ padding: '0.35rem 0.75rem', borderRadius: '0.5rem', background: '#0891b2', color: 'white', fontSize: '0.7rem', fontWeight: 700, border: 'none', cursor: 'pointer' }}>Mark Credited</button>}
-                            {section.key === 'dispute' && <button onClick={() => { setCustomDisputes(prev => prev.filter(d => d.id !== item.id)); }} style={{ padding: '0.35rem 0.75rem', borderRadius: '0.5rem', background: 'white', color: COLORS.burgundy, fontSize: '0.7rem', fontWeight: 700, border: `1px solid ${COLORS.cream}`, cursor: 'pointer' }}>Resolve</button>}
+                          <div className="flex items-center gap-2">
+                            <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${section.badgeClass}`}>
+                              {section.title}
+                            </span>
+                            {section.key === 'vendor' && (
+                              <button
+                                onClick={() => handleRecordRefundReceived(item)}
+                                className="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold cursor-pointer transition-colors"
+                              >
+                                Mark Credited
+                              </button>
+                            )}
+                            {section.key === 'dispute' && (
+                              <button
+                                onClick={() => { setCustomDisputes(prev => prev.filter(d => d.id !== item.id)); }}
+                                className="px-3 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 text-xs font-semibold cursor-pointer transition-colors"
+                              >
+                                Resolve
+                              </button>
+                            )}
                           </div>
                         </div>
                       ))}
@@ -482,45 +591,58 @@ export default function SettlementRouterPage() {
       {/* ─── TAB 2: GRAPH COMPARISON ─── */}
       <AnimatePresence mode="wait">
         {activeTab === 'graph_view' && plan && (
-          <motion.div key="graph" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.3 }} style={{ background: 'white', borderRadius: '1rem', padding: '1.5rem', border: `1px solid ${COLORS.cream}` }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: `1px solid ${COLORS.cream}` }}>
+          <motion.div
+            key="graph"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-2xl p-6 border border-slate-200"
+          >
+            <div className="flex justify-between items-center flex-wrap gap-4 pb-4 border-b border-slate-100 mb-5">
               <div>
-                <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: COLORS.burgundy }}>Debt-Netting Graph Reduction</h2>
-                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '0.25rem' }}>Compare unsimplified peer debts against the Routed Graph.</p>
+                <h2 className="text-lg font-bold text-slate-900">Debt-Netting Graph Reduction</h2>
+                <p className="text-xs text-slate-500 mt-0.5">Compare unsimplified peer debts against the Routed Graph.</p>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', borderRadius: '9999px', background: COLORS.burgundyPale, border: `1px solid ${COLORS.cream}`, fontSize: '0.8rem', fontWeight: 700, color: COLORS.burgundy }}>
-                {plan.rawTransferCount} <ArrowRight size={14} /> <span style={{ color: '#059669' }}>{plan.optimizedTransferCount} transfers</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs font-bold text-slate-800">
+                <span>{plan.rawTransferCount} raw</span>
+                <ArrowRight size={14} />
+                <span className="text-emerald-700">{plan.optimizedTransferCount} transfers</span>
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
-              <div style={{ padding: '1.5rem', borderRadius: '1rem', background: COLORS.burgundyPale + '30', border: `1px solid ${COLORS.cream}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: COLORS.burgundy }}>1. Raw Graph ({plan.rawTransferCount})</h3>
-                  <span style={{ fontSize: '0.65rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '9999px', background: '#f1f5f9', color: '#475569' }}>Before</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-5 rounded-xl bg-slate-50 border border-slate-200">
+                <div className="flex justify-between items-center mb-1">
+                  <h3 className="text-sm font-bold text-slate-900">1. Raw Graph ({plan.rawTransferCount})</h3>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">Before</span>
                 </div>
-                <p style={{ fontSize: '0.75rem', color: '#666', marginBottom: '1rem' }}>Bilateral claims from every individual expense.</p>
-                <div style={{ display: 'grid', gap: '0.75rem' }}>
+                <p className="text-xs text-slate-600 mb-3">Bilateral claims from every individual expense.</p>
+                <div className="grid gap-2">
                   {plan.rawEdges.map(e => (
-                    <div key={e.id} style={{ padding: '1rem', borderRadius: '0.75rem', background: 'white', border: `1px solid ${COLORS.cream}` }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.8rem', fontWeight: 700, color: COLORS.burgundy, marginBottom: '0.25rem' }}>{e.fromName} <ArrowRight size={12} style={{ color: '#aaa' }} /> {e.toName}</div>
-                      <div style={{ fontSize: '1.1rem', fontWeight: 900, color: COLORS.burgundy }}>₹{e.amount.toLocaleString()}</div>
+                    <div key={e.id} className="p-3 rounded-lg bg-white border border-slate-200">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 mb-0.5">
+                        {e.fromName} <ArrowRight size={12} className="text-slate-400" /> {e.toName}
+                      </div>
+                      <div className="text-base font-black text-slate-900">₹{e.amount.toLocaleString('en-IN')}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div style={{ padding: '1.5rem', borderRadius: '1rem', background: 'linear-gradient(135deg, rgba(16,185,129,0.05) 0%, rgba(16,185,129,0.01) 100%)', border: '1px solid rgba(16,185,129,0.3)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#064e3b' }}>2. Optimized Graph ({plan.optimizedTransferCount})</h3>
-                  <span style={{ fontSize: '0.65rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '9999px', background: '#ecfdf5', color: '#047857' }}>Netted</span>
+              <div className="p-5 rounded-xl bg-emerald-50/50 border border-emerald-200">
+                <div className="flex justify-between items-center mb-1">
+                  <h3 className="text-sm font-bold text-emerald-900">2. Optimized Graph ({plan.optimizedTransferCount})</h3>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Netted</span>
                 </div>
-                <p style={{ fontSize: '0.75rem', color: '#065f46', marginBottom: '1rem' }}>Cycles cancelled. {plan.savingsCount} transfers eliminated.</p>
-                <div style={{ display: 'grid', gap: '0.75rem' }}>
+                <p className="text-xs text-emerald-800 mb-3">Cycles cancelled. {plan.savingsCount} transfers eliminated.</p>
+                <div className="grid gap-2">
                   {plan.transfers.map(t => (
-                    <div key={t.id} style={{ padding: '1rem', borderRadius: '0.75rem', background: 'white', border: '1px solid #a7f3d0' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.8rem', fontWeight: 700, color: '#064e3b', marginBottom: '0.25rem' }}>{t.fromMemberName} <ArrowRight size={12} style={{ color: '#10b981' }} /> {t.toMemberName}</div>
-                      <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#047857' }}>₹{t.amount.toLocaleString()}</div>
+                    <div key={t.id} className="p-3 rounded-lg bg-white border border-emerald-200">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-950 mb-0.5">
+                        {t.fromMemberName} <ArrowRight size={12} className="text-emerald-600" /> {t.toMemberName}
+                      </div>
+                      <div className="text-base font-black text-emerald-700">₹{t.amount.toLocaleString('en-IN')}</div>
                     </div>
                   ))}
                 </div>
@@ -533,16 +655,23 @@ export default function SettlementRouterPage() {
       {/* ─── TAB 3: BENCHMARK ─── */}
       <AnimatePresence mode="wait">
         {activeTab === 'benchmark' && (
-          <motion.div key="benchmark" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.3 }} style={{ background: 'white', borderRadius: '1rem', padding: '1.5rem', border: `1px solid ${COLORS.cream}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
-              <Sparkles size={24} style={{ color: '#f59e0b' }} />
+          <motion.div
+            key="benchmark"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-2xl p-6 border border-slate-200"
+          >
+            <div className="flex items-center gap-3 mb-5">
+              <Sparkles size={24} className="text-amber-500" />
               <div>
-                <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: COLORS.burgundy }}>Section 7 Specification Benchmark</h2>
-                <p style={{ fontSize: '0.75rem', color: '#888', marginTop: '0.125rem' }}>Executing the exact canonical example defined in the architecture document.</p>
+                <h2 className="text-lg font-bold text-slate-900">Section 7 Specification Benchmark</h2>
+                <p className="text-xs text-slate-500 mt-0.5">Executing the exact canonical example defined in the architecture document.</p>
               </div>
             </div>
 
-            <div style={{ padding: '1.25rem', borderRadius: '0.75rem', background: COLORS.burgundy, color: COLORS.cream, fontFamily: 'monospace', fontSize: '0.75rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+            <div className="p-4 rounded-xl bg-slate-900 text-slate-200 font-mono text-xs leading-relaxed mb-5 border border-slate-800">
               EXAMPLE (FROM ARCHITECTURE SPEC)<br/>
               ---------------------------------<br/>
                 A owes B:     Rs 2,000<br/>
@@ -553,27 +682,27 @@ export default function SettlementRouterPage() {
                 Router output: "Wait for the hotel refund, then complete 2 transfers instead of 5."
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.25rem' }}>
-              <div style={{ padding: '1.25rem', borderRadius: '0.875rem', background: COLORS.burgundyPale + '30', border: `1px solid ${COLORS.cream}` }}>
-                <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: COLORS.burgundy, marginBottom: '0.75rem' }}>Initial Obligations</h4>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.75rem', display: 'grid', gap: '0.5rem', color: '#666' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <h4 className="text-xs font-bold text-slate-900 mb-3 uppercase tracking-wider">Initial Obligations</h4>
+                <ul className="text-xs space-y-2 text-slate-600">
                   <li>{benchmarkData.state.members[0].displayName} owes {benchmarkData.state.members[1].displayName}: <strong>₹2,000</strong></li>
                   <li>{benchmarkData.state.members[1].displayName} owes {benchmarkData.state.members[2].displayName}: <strong>₹1,500</strong></li>
                   <li>{benchmarkData.state.members[2].displayName} owes {benchmarkData.state.members[0].displayName}: <strong>₹1,000</strong></li>
-                  <li style={{ color: '#0891b2' }}>Grand Hotel owes {benchmarkData.state.members[1].displayName}: <strong>₹700</strong> (Pending)</li>
+                  <li className="text-blue-700 font-semibold">Grand Hotel owes {benchmarkData.state.members[1].displayName}: <strong>₹700</strong> (Pending)</li>
                 </ul>
               </div>
-              
-              <div style={{ padding: '1.25rem', borderRadius: '0.875rem', background: '#ecfdf5', border: '1px solid #a7f3d0' }}>
-                <h4 style={{ fontSize: '0.85rem', fontWeight: 800, color: '#064e3b', marginBottom: '0.75rem' }}>Router Routing Decision</h4>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.75rem', display: 'grid', gap: '0.5rem', color: '#065f46' }}>
+
+              <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200">
+                <h4 className="text-xs font-bold text-emerald-950 mb-3 uppercase tracking-wider">Router Routing Decision</h4>
+                <ul className="text-xs space-y-2 text-emerald-900">
                   <li>
-                    <span style={{ display: 'inline-block', fontSize: '0.65rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '4px', background: 'rgba(16,185,129,0.15)', color: '#047857', marginBottom: '0.25rem' }}>Pay Now</span>
-                    <p style={{ margin: 0 }}>{benchmarkData.state.members[0].displayName} → {benchmarkData.state.members[2].displayName}: ₹500 (Debt clear)</p>
+                    <span className="inline-block text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-200/70 text-emerald-900 mb-1">Pay Now</span>
+                    <p className="m-0">{benchmarkData.state.members[0].displayName} → {benchmarkData.state.members[2].displayName}: ₹500 (Debt clear)</p>
                   </li>
                   <li>
-                    <span style={{ display: 'inline-block', fontSize: '0.65rem', fontWeight: 800, padding: '0.15rem 0.5rem', borderRadius: '4px', background: 'rgba(245,158,11,0.15)', color: '#b45309', marginBottom: '0.25rem' }}>Pay After Refund</span>
-                    <p style={{ margin: 0 }}>{benchmarkData.state.members[0].displayName} → {benchmarkData.state.members[1].displayName}: ₹500 (Hold for ₹700 hotel refund)</p>
+                    <span className="inline-block text-xs font-bold px-2 py-0.5 rounded-md bg-amber-200/70 text-amber-900 mb-1">Pay After Refund</span>
+                    <p className="m-0">{benchmarkData.state.members[0].displayName} → {benchmarkData.state.members[1].displayName}: ₹500 (Hold for ₹700 hotel refund)</p>
                   </li>
                 </ul>
               </div>
@@ -582,83 +711,215 @@ export default function SettlementRouterPage() {
         )}
       </AnimatePresence>
 
-      {/* Shared Modal Styling */}
-      {(() => {
-        const modalBackdrop = { position: 'fixed' as const, top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(121,21,35,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1.5rem' };
-        const modalContent = { background: 'white', borderRadius: '1rem', width: '100%', maxWidth: '420px', padding: '1.75rem', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' };
-        const inputStyle = { width: '100%', padding: '0.625rem 0.875rem', borderRadius: '0.5rem', border: `1.5px solid ${COLORS.cream}`, fontSize: '0.8rem', fontFamily: 'inherit', marginTop: '0.375rem', outline: 'none' };
-        const labelStyle = { fontSize: '0.75rem', fontWeight: 700, color: COLORS.burgundy };
-        const btnBase = { padding: '0.625rem 1rem', borderRadius: '0.5rem', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', border: 'none' };
+      {/* Shared Modals */}
+      {showAddRefundModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl border border-slate-200">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-base font-bold text-slate-900">Add Vendor Refund Claim</h3>
+              <X size={18} onClick={() => setShowAddRefundModal(false)} className="cursor-pointer text-slate-400 hover:text-slate-600" />
+            </div>
+            <form onSubmit={handleAddCustomRefund} className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">External Vendor Name</label>
+                <input
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newVendorName}
+                  onChange={e => setNewVendorName(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Expected Refund Amount (₹)</label>
+                <input
+                  type="number"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newRefundAmount}
+                  onChange={e => setNewRefundAmount(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Recipient Traveler</label>
+                <select
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                  value={newRefundRecipient}
+                  onChange={e => setNewRefundRecipient(e.target.value)}
+                >
+                  {state?.members.map(m => (
+                    <option key={m.memberId} value={m.memberId}>{m.displayName}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Reason</label>
+                <input
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newRefundReason}
+                  onChange={e => setNewRefundReason(e.target.value)}
+                />
+              </div>
+              <div className="flex justify-end gap-2 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddRefundModal(false)}
+                  className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold cursor-pointer transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer transition-colors"
+                >
+                  Add Claim
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
-        return (
-          <>
-            {showAddRefundModal && (
-              <div style={modalBackdrop}>
-                <div style={modalContent}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}><h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: COLORS.burgundy }}>Add Vendor Refund Claim</h3><X size={18} onClick={() => setShowAddRefundModal(false)} style={{ cursor: 'pointer', color: '#888' }} /></div>
-                  <form onSubmit={handleAddCustomRefund}>
-                    <div style={{ marginBottom: '1rem' }}><label style={labelStyle}>External Vendor Name</label><input style={inputStyle} value={newVendorName} onChange={e => setNewVendorName(e.target.value)} required /></div>
-                    <div style={{ marginBottom: '1rem' }}><label style={labelStyle}>Expected Refund Amount (₹)</label><input type="number" style={inputStyle} value={newRefundAmount} onChange={e => setNewRefundAmount(e.target.value)} required /></div>
-                    <div style={{ marginBottom: '1rem' }}><label style={labelStyle}>Recipient Traveler</label><select style={inputStyle} value={newRefundRecipient} onChange={e => setNewRefundRecipient(e.target.value)}>{state?.members.map(m => <option key={m.memberId} value={m.memberId}>{m.displayName}</option>)}</select></div>
-                    <div style={{ marginBottom: '1rem' }}><label style={labelStyle}>Reason</label><input style={inputStyle} value={newRefundReason} onChange={e => setNewRefundReason(e.target.value)} /></div>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
-                      <button type="button" onClick={() => setShowAddRefundModal(false)} style={{ ...btnBase, background: 'transparent', border: `1px solid ${COLORS.cream}`, color: COLORS.burgundy }}>Cancel</button>
-                      <button type="submit" style={{ ...btnBase, background: COLORS.burgundy, color: 'white' }}>Add Claim</button>
-                    </div>
-                  </form>
-                </div>
+      {showAddDisputeModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl border border-slate-200">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-base font-bold text-slate-900">Flag Dispute</h3>
+              <X size={18} onClick={() => setShowAddDisputeModal(false)} className="cursor-pointer text-slate-400 hover:text-slate-600" />
+            </div>
+            <form onSubmit={handleAddCustomDispute} className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Contested Expense</label>
+                <select
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                  value={newDisputeExpenseId}
+                  onChange={e => setNewDisputeExpenseId(e.target.value)}
+                >
+                  {state?.expenses.map(exp => (
+                    <option key={exp.expenseId} value={exp.expenseId}>{exp.note || 'Expense'} — ₹{exp.amount}</option>
+                  ))}
+                </select>
               </div>
-            )}
-            
-            {showAddDisputeModal && (
-              <div style={modalBackdrop}>
-                <div style={modalContent}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}><h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: COLORS.burgundy }}>Flag Dispute</h3><X size={18} onClick={() => setShowAddDisputeModal(false)} style={{ cursor: 'pointer', color: '#888' }} /></div>
-                  <form onSubmit={handleAddCustomDispute}>
-                    <div style={{ marginBottom: '1rem' }}><label style={labelStyle}>Contested Expense</label><select style={inputStyle} value={newDisputeExpenseId} onChange={e => setNewDisputeExpenseId(e.target.value)}>{state?.expenses.map(exp => <option key={exp.expenseId} value={exp.expenseId}>{exp.note || 'Expense'} — ₹{exp.amount}</option>)}</select></div>
-                    <div style={{ marginBottom: '1rem' }}><label style={labelStyle}>Rationale</label><textarea rows={3} style={inputStyle} value={newDisputeReason} onChange={e => setNewDisputeReason(e.target.value)} required /></div>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
-                      <button type="button" onClick={() => setShowAddDisputeModal(false)} style={{ ...btnBase, background: 'transparent', border: `1px solid ${COLORS.cream}`, color: COLORS.burgundy }}>Cancel</button>
-                      <button type="submit" style={{ ...btnBase, background: COLORS.burgundy, color: 'white' }}>Flag Dispute</button>
-                    </div>
-                  </form>
-                </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Rationale</label>
+                <textarea
+                  rows={3}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newDisputeReason}
+                  onChange={e => setNewDisputeReason(e.target.value)}
+                  required
+                />
               </div>
-            )}
+              <div className="flex justify-end gap-2 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddDisputeModal(false)}
+                  className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold cursor-pointer transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer transition-colors"
+                >
+                  Flag Dispute
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
-            {showAddVoucherModal && (
-              <div style={modalBackdrop}>
-                <div style={modalContent}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}><h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: COLORS.burgundy }}>Add Voucher</h3><X size={18} onClick={() => setShowAddVoucherModal(false)} style={{ cursor: 'pointer', color: '#888' }} /></div>
-                  <form onSubmit={handleAddCustomVoucher}>
-                    <div style={{ marginBottom: '1rem' }}><label style={labelStyle}>Issuer</label><input style={inputStyle} value={newVoucherIssuer} onChange={e => setNewVoucherIssuer(e.target.value)} required /></div>
-                    <div style={{ marginBottom: '1rem' }}><label style={labelStyle}>Value (₹)</label><input type="number" style={inputStyle} value={newVoucherValue} onChange={e => setNewVoucherValue(e.target.value)} required /></div>
-                    <div style={{ marginBottom: '1rem' }}><label style={labelStyle}>Holder</label><select style={inputStyle} value={newVoucherHolder} onChange={e => setNewVoucherHolder(e.target.value)}>{state?.members.map(m => <option key={m.memberId} value={m.memberId}>{m.displayName}</option>)}</select></div>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
-                      <button type="button" onClick={() => setShowAddVoucherModal(false)} style={{ ...btnBase, background: 'transparent', border: `1px solid ${COLORS.cream}`, color: COLORS.burgundy }}>Cancel</button>
-                      <button type="submit" style={{ ...btnBase, background: COLORS.burgundy, color: 'white' }}>Add Voucher</button>
-                    </div>
-                  </form>
-                </div>
+      {showAddVoucherModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl border border-slate-200">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-base font-bold text-slate-900">Add Voucher</h3>
+              <X size={18} onClick={() => setShowAddVoucherModal(false)} className="cursor-pointer text-slate-400 hover:text-slate-600" />
+            </div>
+            <form onSubmit={handleAddCustomVoucher} className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Issuer</label>
+                <input
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newVoucherIssuer}
+                  onChange={e => setNewVoucherIssuer(e.target.value)}
+                  required
+                />
               </div>
-            )}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Value (₹)</label>
+                <input
+                  type="number"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newVoucherValue}
+                  onChange={e => setNewVoucherValue(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Holder</label>
+                <select
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                  value={newVoucherHolder}
+                  onChange={e => setNewVoucherHolder(e.target.value)}
+                >
+                  {state?.members.map(m => (
+                    <option key={m.memberId} value={m.memberId}>{m.displayName}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-end gap-2 pt-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAddVoucherModal(false)}
+                  className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold cursor-pointer transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer transition-colors"
+                >
+                  Add Voucher
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
-            {selectedQRTransfer && (
-              <div style={modalBackdrop} onClick={() => setSelectedQRTransfer(null)}>
-                <div style={{ ...modalContent, textAlign: 'center', maxWidth: '320px' }} onClick={e => e.stopPropagation()}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}><h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: COLORS.burgundy }}>UPI Payment</h3><X size={18} onClick={() => setSelectedQRTransfer(null)} style={{ cursor: 'pointer', color: '#888' }} /></div>
-                  <div style={{ padding: '0.75rem', border: `1px solid ${COLORS.cream}`, borderRadius: '0.75rem', display: 'inline-block', marginBottom: '1rem' }}>
-                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(selectedQRTransfer.upiLink || '')}`} width={220} height={220} alt="QR Code" />
-                  </div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 900, color: COLORS.burgundy, marginBottom: '0.25rem' }}>₹{selectedQRTransfer.amount.toLocaleString()}</div>
-                  <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.5rem' }}>Pay to: <strong>{selectedQRTransfer.toMemberName}</strong></div>
-                  <div style={{ fontSize: '0.7rem', color: '#aaa' }}>Scan with GPay, PhonePe, Paytm, etc.</div>
-                </div>
-              </div>
-            )}
-          </>
-        );
-      })()}
+      {selectedQRTransfer && (
+        <div
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedQRTransfer(null)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200 text-center max-w-xs w-full"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-base font-bold text-slate-900">UPI Payment</h3>
+              <X size={18} onClick={() => setSelectedQRTransfer(null)} className="cursor-pointer text-slate-400 hover:text-slate-600" />
+            </div>
+            <div className="p-3 border border-slate-200 rounded-xl inline-block mb-3 bg-white">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(selectedQRTransfer.upiLink || '')}`}
+                width={200}
+                height={200}
+                alt="UPI QR Code"
+                className="mx-auto"
+              />
+            </div>
+            <div className="text-2xl font-black text-slate-900 mb-1">
+              ₹{selectedQRTransfer.amount.toLocaleString('en-IN')}
+            </div>
+            <div className="text-xs text-slate-600 mb-1">
+              Pay to: <strong className="text-slate-900">{selectedQRTransfer.toMemberName}</strong>
+            </div>
+            <div className="text-xs text-slate-400">Scan with GPay, PhonePe, Paytm, etc.</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
