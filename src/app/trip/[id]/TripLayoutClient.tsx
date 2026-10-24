@@ -19,10 +19,10 @@ import { fetchLiveWeather, type LiveWeatherReport } from '@/lib/weather';
 import { useTripId, getTripPath } from '@/lib/trip-routing';
 
 const COLORS = {
-  burgundy: '#791523',
-  cream: '#eadecd',
-  offWhite: '#fdfbfa',
-  rose: '#b83a4b'
+  burgundy: '#0f172a',
+  cream: '#f8fafc',
+  offWhite: '#ffffff',
+  rose: '#2563eb'
 };
 
 const NAV_ITEMS = [
@@ -375,7 +375,7 @@ export default function TripLayoutClient({ children }: { children: React.ReactNo
         {/* Main Content Area */}
         <main className="flex-1 min-h-screen overflow-x-hidden relative flex flex-col">
           {/* Mobile-only Top Bar */}
-          <div className="md:hidden flex items-center justify-between p-4 border-b bg-[#fdfbfa]/95 backdrop-blur-md sticky top-0 z-30" style={{ borderColor: `${COLORS.cream}` }}>
+          <div className="md:hidden flex items-center justify-between p-4 border-b bg-[#ffffff]/95 backdrop-blur-md sticky top-0 z-30" style={{ borderColor: `${COLORS.cream}` }}>
             <div className="flex items-center gap-3">
               <button 
                 type="button"

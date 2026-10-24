@@ -21,12 +21,6 @@ import { recalculateDaySequence, ALTERNATIVE_LOCATIONS } from '@/lib/itinerary-r
 import ItineraryMap from '@/components/ItineraryMap';
 import { geocodeLocation, isSampleActivity } from '@/lib/geocoding';
 import { appendEvent } from '@/lib/ledger';
-import {
-  fetchLiveWeather,
-  type LiveWeatherReport,
-  type DailyForecast,
-  OPENWEATHER_API_KEY,
-} from '@/lib/weather';
 import { getDestinationSocialSignals } from '@/lib/social-signals';
 import {
   Plus, Plane, Hotel, Activity, Car, UtensilsCrossed, MoreHorizontal,
@@ -38,10 +32,10 @@ import {
 } from 'lucide-react';
 
 const COLORS = {
-  burgundy: '#791523',
-  cream: '#eadecd',
-  offWhite: '#fdfbfa',
-  rose: '#b83a4b'
+  burgundy: '#0f172a',
+  cream: '#f8fafc',
+  offWhite: '#ffffff',
+  rose: '#2563eb'
 };
 
 const modalVariants = {
@@ -162,13 +156,9 @@ export default function ItineraryPage() {
   const [swappingItem, setSwappingItem] = useState<ItineraryItem | null>(null);
   const [movingDayItem, setMovingDayItem] = useState<ItineraryItem | null>(null);
 
-  // Weather & Digital Twin State (Live meteorological data from OpenWeather)
-  const [weatherReport, setWeatherReport] = useState<LiveWeatherReport | null>(null);
-  const [weatherLoading, setWeatherLoading] = useState(false);
-  const [showWeatherDetails, setShowWeatherDetails] = useState(true);
   const socialSignals = useMemo(
-    () => getDestinationSocialSignals(trip?.destination || trip?.name || '', weatherReport),
-    [trip?.destination, trip?.name, weatherReport]
+    () => getDestinationSocialSignals(trip?.destination || trip?.name || '', null),
+    [trip?.destination, trip?.name]
   );
 
   // Load everything
@@ -291,24 +281,6 @@ export default function ItineraryPage() {
         });
         setParticipantsMap(map);
       }
-
-      // Fetch Live Environmental & Weather Feed (OpenWeather)
-      const destination = (tripDoc.exists() ? (tripDoc.data()?.destination || tripDoc.data()?.name) : '') || '';
-      const firstCoords = loadedItems.find(i => i.location?.latitude && i.location?.longitude)?.location;
-
-      if (destination || firstCoords) {
-        setWeatherLoading(true);
-        fetchLiveWeather(destination, firstCoords?.latitude ?? undefined, firstCoords?.longitude ?? undefined)
-          .then(rep => {
-            setWeatherReport(rep);
-          })
-          .catch(err => {
-            console.warn('Live weather load error:', err);
-          })
-          .finally(() => {
-            setWeatherLoading(false);
-          });
-      }
     } catch (err) {
       console.error('Error loading itinerary data:', err);
     } finally {
@@ -316,20 +288,8 @@ export default function ItineraryPage() {
     }
   }, [tripId]);
 
-  async function handleRefreshWeather() {
-    const dest = trip?.destination || trip?.name || '';
-    const firstCoords = items.find(i => i.location?.latitude && i.location?.longitude)?.location;
-    setWeatherLoading(true);
-    try {
-      const rep = await fetchLiveWeather(dest, firstCoords?.latitude ?? undefined, firstCoords?.longitude ?? undefined);
-      setWeatherReport(rep);
-    } catch (e) {
-      console.warn('Weather refresh error:', e);
-    } finally {
-      setWeatherLoading(false);
-    }
-  }
 
+      
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -862,24 +822,7 @@ export default function ItineraryPage() {
                   {days.length} Days Planned
                 </span>
               )}
-              {weatherReport ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200/80 shadow-2xs">
-                  {weatherReport.current.condition.toLowerCase().includes('rain') ? (
-                    <CloudRain className="w-3.5 h-3.5 text-blue-500" />
-                  ) : weatherReport.current.condition === 'Clear' ? (
-                    <Sun className="w-3.5 h-3.5 text-amber-500" />
-                  ) : (
-                    <Cloud className="w-3.5 h-3.5 text-slate-500" />
-                  )}
-                  <span>{weatherReport.current.temp}°C {weatherReport.current.condition}</span>
-                  <span className="text-[10px] text-emerald-600 font-extrabold uppercase">● Live OpenWeather</span>
-                </span>
-              ) : weatherLoading ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50/70 text-amber-800 border border-amber-200/60 shadow-2xs animate-pulse">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Connecting OpenWeather...</span>
-                </span>
-              ) : null}
+              
             </div>
 
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">
@@ -953,7 +896,7 @@ export default function ItineraryPage() {
             {items.length > 0 && (
               <button
                 onClick={handleClearAllActivities}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-500 bg-white border border-slate-200 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50/50 transition-colors shadow-xs"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-500 bg-white border border-slate-200 hover:text-red-600 hover:border-red-200 hover:bg-red-50/50 transition-colors shadow-xs"
                 title="Remove all activities to start with an empty itinerary"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -979,7 +922,7 @@ export default function ItineraryPage() {
           <div className="space-y-1">
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Est. Budget Used</span>
             <div className="flex items-baseline gap-1.5">
-              <span className={`text-lg font-bold ${isOverBudget ? 'text-rose-600' : 'text-slate-900'}`}>
+              <span className={`text-lg font-bold ${isOverBudget ? 'text-red-600' : 'text-slate-900'}`}>
                 ₹{totalCost.toLocaleString('en-IN')}
               </span>
               {totalBudget > 0 && (
@@ -990,7 +933,7 @@ export default function ItineraryPage() {
               <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden mt-1.5">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${
-                    isOverBudget ? 'bg-rose-500' : 'bg-indigo-500'
+                    isOverBudget ? 'bg-blue-600' : 'bg-indigo-500'
                   }`}
                   style={{ width: `${budgetPercent}%` }}
                 />
@@ -1041,253 +984,7 @@ export default function ItineraryPage() {
         </div>
       </motion.div>
 
-      {/* ── LIVE WEATHER & ENVIRONMENTAL DIGITAL TWIN (OPENWEATHER) ── */}
-      {weatherReport ? (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-[2rem] border border-indigo-100/80 bg-gradient-to-br from-white via-indigo-50/20 to-sky-50/25 p-6 shadow-xl backdrop-blur-md"
-        >
-          {/* Header Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-indigo-100/70">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-md text-white shrink-0" style={{ backgroundColor: COLORS.burgundy }}>
-                <Cloud className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-base font-bold text-slate-900 tracking-tight">
-                    Environmental Digital Twin • Live Weather Stream
-                  </h2>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    {weatherReport.source === 'OpenWeather'
-                      ? 'OpenWeather Live Connected (80e015...)'
-                      : 'Live Meteorological Stream (OpenWeather Key: 80e015... Active)'}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-500 flex flex-wrap items-center gap-1.5 mt-0.5">
-                  <MapPin className="w-3 h-3 text-slate-400" />
-                  <span className="font-semibold text-slate-700">{weatherReport.destination}</span>
-                  {weatherReport.current.coord && (
-                    <span className="text-slate-400">
-                      ({weatherReport.current.coord.lat.toFixed(2)}°N, {weatherReport.current.coord.lon.toFixed(2)}°E)
-                    </span>
-                  )}
-                  <span className="text-slate-300">•</span>
-                  <span>Updated {new Date(weatherReport.last_updated).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={handleRefreshWeather}
-                disabled={weatherLoading}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 bg-white border border-slate-200 hover:text-indigo-600 hover:border-indigo-200 transition shadow-2xs cursor-pointer"
-                title="Refresh live weather feed from OpenWeather"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${weatherLoading ? 'animate-spin text-indigo-600' : ''}`} />
-                <span>{weatherLoading ? 'Updating...' : 'Sync Weather'}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowWeatherDetails(!showWeatherDetails)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
-                title={showWeatherDetails ? 'Collapse weather panel' : 'Expand weather panel'}
-              >
-                {showWeatherDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Expanded Content */}
-          {showWeatherDetails && (
-            <div className="mt-5 space-y-5">
-              {/* Top Row: Current Metrics & AI Impact Assessment */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                
-                {/* Current Atmospheric State */}
-                <div className="lg:col-span-5 flex flex-col justify-between p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Current Conditions</span>
-                      <div className="flex items-baseline gap-2 mt-1">
-                        <span className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                          {weatherReport.current.temp}°C
-                        </span>
-                        <span className="text-xs font-semibold text-slate-500">
-                          Feels {weatherReport.current.feels_like}°C
-                        </span>
-                      </div>
-                      <p className="text-xs font-bold text-slate-700 capitalize mt-1 flex items-center gap-1.5">
-                        {weatherReport.current.condition === 'Clear' ? (
-                          <Sun className="w-4 h-4 text-amber-500" />
-                        ) : weatherReport.current.condition.toLowerCase().includes('rain') ? (
-                          <CloudRain className="w-4 h-4 text-blue-500" />
-                        ) : (
-                          <Cloud className="w-4 h-4 text-slate-500" />
-                        )}
-                        <span>{weatherReport.current.description}</span>
-                      </p>
-                    </div>
-
-                    <div className="text-right text-[11px] text-slate-500 space-y-0.5">
-                      <div>High: <span className="font-bold text-slate-800">{weatherReport.current.temp_max}°C</span></div>
-                      <div>Low: <span className="font-bold text-slate-800">{weatherReport.current.temp_min}°C</span></div>
-                    </div>
-                  </div>
-
-                  {/* 4 Sensor Gauges */}
-                  <div className="grid grid-cols-4 gap-2 pt-4 mt-4 border-t border-slate-100 text-center">
-                    <div className="p-2 rounded-xl bg-slate-50">
-                      <div className="flex items-center justify-center text-sky-500 mb-0.5">
-                        <Droplets className="w-3.5 h-3.5" />
-                      </div>
-                      <span className="text-[10px] text-slate-500 font-medium">Humidity</span>
-                      <div className="text-xs font-bold text-slate-800">{weatherReport.current.humidity}%</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-50">
-                      <div className="flex items-center justify-center text-teal-500 mb-0.5">
-                        <Wind className="w-3.5 h-3.5" />
-                      </div>
-                      <span className="text-[10px] text-slate-500 font-medium">Wind</span>
-                      <div className="text-xs font-bold text-slate-800">{weatherReport.current.wind_speed} km/h</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-50">
-                      <div className="flex items-center justify-center text-indigo-500 mb-0.5">
-                        <CloudRain className="w-3.5 h-3.5" />
-                      </div>
-                      <span className="text-[10px] text-slate-500 font-medium">Rain 1h</span>
-                      <div className="text-xs font-bold text-slate-800">{weatherReport.current.rain_1h} mm</div>
-                    </div>
-                    <div className="p-2 rounded-xl bg-slate-50">
-                      <div className="flex items-center justify-center text-amber-500 mb-0.5">
-                        <Thermometer className="w-3.5 h-3.5" />
-                      </div>
-                      <span className="text-[10px] text-slate-500 font-medium">Pressure</span>
-                      <div className="text-xs font-bold text-slate-800">{weatherReport.current.pressure} hPa</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* AI Digital Twin Impact Model */}
-                <div className="lg:col-span-7 flex flex-col justify-between p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Digital Twin Assessment</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 flex items-center gap-1">
-                        <Sparkles className="w-3 h-3 text-indigo-500" />
-                        AI Cascade Engine
-                      </span>
-                    </div>
-
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                      weatherReport.impact_assessment.risk_level === 'severe'
-                        ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                        : weatherReport.impact_assessment.risk_level === 'high'
-                        ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                        : weatherReport.impact_assessment.risk_level === 'moderate'
-                        ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-                        : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                    }`}>
-                      {weatherReport.impact_assessment.risk_level === 'low' ? '✅' : '⚠️'}
-                      {weatherReport.impact_assessment.risk_level} Disruption Risk
-                    </span>
-                  </div>
-
-                  <p className="text-xs font-semibold text-slate-800 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
-                    {weatherReport.impact_assessment.impact_summary}
-                  </p>
-
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Recommended Operational Responses:</span>
-                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[11px] text-slate-600">
-                      {weatherReport.impact_assessment.recommended_actions.slice(0, 4).map((rec, i) => (
-                        <li key={i} className="flex items-start gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500 shrink-0 mt-0.5" />
-                          <span>{rec}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* 5-Day Forecast Row */}
-              {weatherReport.forecast.length > 0 && (
-                <div className="space-y-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                    5-Day Weather Forecast & Itinerary Synchronization
-                  </span>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                    {weatherReport.forecast.slice(0, 5).map((f) => (
-                      <div
-                        key={f.date}
-                        className="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs hover:border-indigo-300 transition-all space-y-2"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-slate-900">{f.day_name}</span>
-                          <span className="text-[10px] font-medium text-slate-400">{formatDayDate(f.date)}</span>
-                        </div>
-
-                        <div className="flex items-center justify-between py-1">
-                          <div className="flex items-center gap-1.5">
-                            {f.condition.toLowerCase().includes('rain') ? (
-                              <CloudRain className="w-5 h-5 text-blue-500" />
-                            ) : f.condition === 'Clear' ? (
-                              <Sun className="w-5 h-5 text-amber-500" />
-                            ) : (
-                              <Cloud className="w-5 h-5 text-slate-400" />
-                            )}
-                            <span className="text-xs font-bold text-slate-700">{f.condition}</span>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-xs font-black text-slate-900">{f.temp_max}°</span>
-                            <span className="text-[10px] text-slate-400 ml-1">{f.temp_min}°</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-100">
-                          <span className="flex items-center gap-1">
-                            <Droplets className="w-2.5 h-2.5 text-sky-500" />
-                            {Math.round(f.pop * 100)}% rain
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Wind className="w-2.5 h-2.5 text-slate-400" />
-                            {f.wind_speed} km/h
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </motion.div>
-      ) : weatherLoading ? (
-        <div className="rounded-[2rem] border border-indigo-100/80 bg-white/80 p-6 shadow-sm flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-indigo-50 text-indigo-600 animate-pulse">
-              <Cloud className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-slate-800">Streaming Live OpenWeather Data...</span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Live Sync
-                </span>
-              </div>
-              <p className="text-xs text-slate-500">Contacting OpenWeather API for {trip?.destination || trip?.name || 'trip destination'}...</p>
-            </div>
-          </div>
-          <RefreshCw className="w-4 h-4 text-indigo-600 animate-spin" />
-        </div>
-      ) : null}
-
+      
       {/* ── DUMMY DATA PURGE BANNER ── */}
       {sampleActivities.length > 0 && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/90 rounded-2xl shadow-xs">
@@ -1329,9 +1026,7 @@ export default function ItineraryPage() {
           </button>
 
           {groupedDays.map(({ day, items: dItems }) => {
-            const dForecast = weatherReport?.forecast.find(f => f.date === day.day_date) || 
-              (weatherReport?.forecast.length ? weatherReport.forecast[(day.day_index ? day.day_index - 1 : 0) % weatherReport.forecast.length] : null);
-
+            
             return (
               <button
                 key={day.id}
@@ -1343,12 +1038,7 @@ export default function ItineraryPage() {
                 }`}
               >
                 <span>{day.day_index ? `Day ${day.day_index}` : 'Day'}</span>
-                {dForecast && (
-                  <span className="text-[10px] opacity-90">
-                    {dForecast.condition === 'Clear' ? '☀️' : dForecast.condition.toLowerCase().includes('rain') ? '🌧️' : '⛅'}
-                    {dForecast.temp_max}°
-                  </span>
-                )}
+                
                 <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
                   selectedDayFilter === day.id ? 'bg-indigo-700/60 text-indigo-100' : 'bg-slate-100 text-slate-500'
                 }`}>
@@ -1412,9 +1102,7 @@ export default function ItineraryPage() {
                     .filter(i => i.status === 'active')
                     .reduce((sum, item) => sum + (Number(item.cost) || 0), 0);
 
-                  const dayForecast = weatherReport?.forecast.find(f => f.date === day.day_date) || 
-                    (weatherReport?.forecast.length ? weatherReport.forecast[(day.day_index ? day.day_index - 1 : 0) % weatherReport.forecast.length] : null);
-
+                  
                   return (
                     <motion.div 
                       key={day.id} 
@@ -1433,26 +1121,7 @@ export default function ItineraryPage() {
                               <h2 className="text-base font-bold text-slate-900">
                                 {day.title || `Day ${day.day_index}`}
                               </h2>
-                              {dayForecast ? (
-                                <span className="inline-flex items-center gap-1.5 text-xs px-2.5 py-0.5 rounded-full bg-indigo-50/70 text-indigo-700 font-semibold border border-indigo-100">
-                                  {dayForecast.condition.toLowerCase().includes('rain') ? (
-                                    <CloudRain className="w-3.5 h-3.5 text-blue-500" />
-                                  ) : dayForecast.condition === 'Clear' ? (
-                                    <Sun className="w-3.5 h-3.5 text-amber-500" />
-                                  ) : (
-                                    <Cloud className="w-3.5 h-3.5 text-slate-400" />
-                                  )}
-                                  <span>{dayForecast.condition} • {dayForecast.temp_max}°/{dayForecast.temp_min}°C</span>
-                                  {dayForecast.pop > 0.2 && (
-                                    <span className="text-[10px] text-blue-600 font-bold ml-0.5">({Math.round(dayForecast.pop * 100)}% rain)</span>
-                                  )}
-                                </span>
-                              ) : day.weather_forecast?.condition ? (
-                                <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 font-medium">
-                                  <Sun className="w-3 h-3 text-amber-500" />
-                                  {day.weather_forecast.condition} • {day.weather_forecast.temp}
-                                </span>
-                              ) : null}
+                              
                             </div>
                             <p className="text-xs text-slate-500">
                               {formatDayDate(day.day_date)} • {dayItems.length} activities • ₹{dayCost.toLocaleString('en-IN')} est.
@@ -1560,7 +1229,7 @@ export default function ItineraryPage() {
                                           </span>
 
                                           {isCancelled && (
-                                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600">
+                                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 text-red-600">
                                               Cancelled
                                             </span>
                                           )}
@@ -1641,7 +1310,7 @@ export default function ItineraryPage() {
                                         </button>
                                         <button
                                           onClick={() => handleDeleteItem(item.id)}
-                                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                                          className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                                           title="Delete activity"
                                         >
                                           <Trash2 className="w-4 h-4" />
@@ -1731,7 +1400,6 @@ export default function ItineraryPage() {
                 destination={trip?.destination}
                 highlightedItemId={highlightedItemId}
                 dayTitle={activeDayTitle}
-                weatherReport={weatherReport}
                 socialSignals={socialSignals}
                 onAddLocationClick={() => openCreateModal()}
                 onMapClick={(lat, lng) => {
@@ -1744,18 +1412,12 @@ export default function ItineraryPage() {
                   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }}
               />
-              <div className="p-3 bg-white rounded-xl border border-slate-200/80 text-xs text-slate-500 flex items-center justify-between">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Weather Twin & Social Signals ({socialSignals.length} Active)</span>
+              <div className="p-3 bg-white rounded-xl border border-slate-200/80 text-xs text-slate-600 flex items-center justify-between shadow-2xs">
+                <span className="flex items-center gap-2 font-medium">
+                  <MapPin className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>{mapItems.length} {mapItems.length === 1 ? 'Location' : 'Locations'} on Interactive Map</span>
                 </span>
-                <button
-                  type="button"
-                  onClick={() => router.push(`/trip/${tripId}/weather`)}
-                  className="font-bold text-rose-700 hover:text-rose-800 transition flex items-center gap-1"
-                >
-                  Full Weather Twin &rarr;
-                </button>
+                <span className="text-[11px] text-slate-400 font-medium">Itinerary Geotagged</span>
               </div>
             </div>
           </div>
@@ -1821,7 +1483,7 @@ export default function ItineraryPage() {
                             ★ {alt.rating}
                           </span>
                         </div>
-                        <h4 className="text-sm font-bold text-gray-900 group-hover:text-[#791523] transition-colors">
+                        <h4 className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
                           {alt.name}
                         </h4>
                         <p className="text-xs text-gray-600 leading-relaxed">
@@ -1906,7 +1568,7 @@ export default function ItineraryPage() {
                       key={d.id}
                       type="button"
                       onClick={() => handleShiftDay(d.id)}
-                      className="w-full flex items-center justify-between p-3.5 rounded-xl border hover:border-[#791523] hover:bg-[#791523]/5 text-left text-xs font-bold text-gray-800 transition-all cursor-pointer"
+                      className="w-full flex items-center justify-between p-3.5 rounded-xl border hover:border-blue-600 hover:bg-blue-50 text-left text-xs font-bold text-gray-800 transition-all cursor-pointer"
                       style={{ borderColor: `${COLORS.cream}` }}
                     >
                       <span>Day {d.day_index} — {formatDayDate(d.day_date)}</span>

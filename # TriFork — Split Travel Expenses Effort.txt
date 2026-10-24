@@ -1,0 +1,37 @@
+# TriFork — Split Travel Expenses Effortlessly
+
+[TriFork](http://localhost:3000/)
+
+# Split Expenses
+
+## Not Vibes.
+AI-driven financial ledgers, 3D Cesium travel globes, and live weather twins for your group journeys.
+
+### Automated Ledgers
+Zero manual arithmetic. Our ledger algorithm computes exact balances and eliminates debt cycles automatically.
+
+### Cesium 3D Globe
+Interactive 3D geospatial itinerary planning. High-resolution terrain, 3D waypoint droplines, and glowing transit corridors.
+
+### OpenWeather Digital Twin
+Live meteorological telemetries, Doppler radar tiles, and predictive cascade delay impacts for every destination stop.
+
+## Designed for Effortless Journeys.
+From spontaneous weekend road trips to global luxury flights, TriFork streamlines settlements, routing, and environmental resilience.
+
+### Intelligent Splitting
+Shapley value allocations, itemized splits, and proportional consumption. Fair, crystal-clear, and verifiable.
+
+### Minimal Settlements
+Graph optimization reduces 50 random peer-to-peer transfers down to just 3 clean settlements. One-click UPI settlement.
+
+### 3D Spatial Itinerary
+Explore stops on a Cesium 3D Globe with OpenWeather live radar tiles, social signals, and transit buffers.
+
+## READY TO EXPLORE?
+Start planning your next group adventure today. Invite friends, map stops, and split expenses seamlessly.
+[Create Free Account](http://localhost:3000/login)
+© 2026 TriFork. Built for the modern traveler. All rights reserved.
+[Sign In](http://localhost:3000/login)
+[Dashboard](http://localhost:3000/hub)
+[Features](http://localhost:3000#features)

@@ -71,7 +71,7 @@ export const PAYMENT_STATE_META: Record<PaymentState, PaymentStateMetadata> = {
     state: 'provisionally_disputed',
     label: 'Provisionally Disputed',
     badgeClass: 'badge-provisionally-disputed',
-    dotColor: '#f43f5e', // rose-500
+    dotColor: '#f43f5e', // red-500
     textColor: '#be123c',
     bgLight: 'rgba(244, 63, 94, 0.1)',
     borderLight: 'rgba(244, 63, 94, 0.3)',

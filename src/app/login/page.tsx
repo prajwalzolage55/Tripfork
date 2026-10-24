@@ -12,10 +12,10 @@ import { ReactLenis } from 'lenis/react';
 import Link from 'next/link';
 
 const COLORS = {
-  burgundy: '#791523',
-  cream: '#eadecd',
-  offWhite: '#fdfbfa',
-  rose: '#b83a4b'
+  burgundy: '#0f172a',
+  cream: '#f8fafc',
+  offWhite: '#ffffff',
+  rose: '#2563eb'
 };
 
 const staggerContainer: Variants = {

@@ -2,42 +2,42 @@
 @import "leaflet/dist/leaflet.css";
 
 @theme {
-  /* ── Brand palette (Burgundy / Wine) ──────────────── */
-  --color-brand-50:  #faf6f5;
-  --color-brand-100: #f5e8eb;
-  --color-brand-200: #eacdd5;
-  --color-brand-300: #dba7b6;
-  --color-brand-400: #c07a8f;
-  --color-brand-500: #9e2d4d;
-  --color-brand-600: #8a1a39;
-  --color-brand-700: #7B0D2E;
-  --color-brand-800: #620a25;
-  --color-brand-900: #4a071b;
+  /* ── Brand palette (Clean Modern Tech / Slate & Sapphire) ── */
+  --color-brand-50:  #f8fafc;
+  --color-brand-100: #f1f5f9;
+  --color-brand-200: #e2e8f0;
+  --color-brand-300: #cbd5e1;
+  --color-brand-400: #94a3b8;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e293b;
+  --color-brand-900: #0f172a;
 
-  --color-accent-400: #c59362;
-  --color-accent-500: #b07d4a;
+  --color-accent-400: #3b82f6;
+  --color-accent-500: #2563eb;
 
-  --color-success-500: #3d9a5f;
-  --color-danger-500:  #c53030;
-  --color-warning-500: #d97706;
+  --color-success-500: #10b981;
+  --color-danger-500:  #ef4444;
+  --color-warning-500: #f59e0b;
 
-  /* ── Surface tokens (Warm cream / ivory) ──────────── */
-  --color-surface-0:   #FFFBF7;
-  --color-surface-50:  #FDF5ED;
-  --color-surface-100: #F5ECE2;
-  --color-surface-200: #EBE0D4;
-  --color-surface-300: #E2D5BE;
-  --color-surface-400: #C4B79E;
-  --color-surface-500: #9E917A;
+  /* ── Surface tokens (Crisp Light White) ───────────── */
+  --color-surface-0:   #ffffff;
+  --color-surface-50:  #f8fafc;
+  --color-surface-100: #f1f5f9;
+  --color-surface-200: #e2e8f0;
+  --color-surface-300: #cbd5e1;
+  --color-surface-400: #94a3b8;
+  --color-surface-500: #64748b;
 
-  --color-text-primary:   #2C1810;
-  --color-text-secondary: #5C4A3D;
-  --color-text-muted:     #8E7D72;
+  --color-text-primary:   #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted:     #94a3b8;
 
   /* ── Glass ─────────────────────────────────────────── */
-  --color-glass: rgba(255, 251, 247, 0.72);
-  --color-glass-border: rgba(44, 24, 16, 0.06);
-  --color-glass-hover: rgba(255, 251, 247, 0.92);
+  --color-glass: rgba(255, 255, 255, 0.88);
+  --color-glass-border: rgba(15, 23, 42, 0.08);
+  --color-glass-hover: rgba(255, 255, 255, 0.98);
 
   /* ── Radius / Spacing ──────────────────────────────── */
   --radius-card: 1rem;
@@ -46,37 +46,37 @@
   --radius-badge: 9999px;
 
   /* ── Shadows ───────────────────────────────────────── */
-  --shadow-card: 0 4px 24px rgba(44, 24, 16, 0.05), 0 0 0 1px rgba(44, 24, 16, 0.03);
-  --shadow-glow: 0 0 48px rgba(123, 13, 46, 0.08);
+  --shadow-card: 0 4px 20px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-glow: 0 0 48px rgba(37, 99, 235, 0.12);
 
   /* ── Font ───────────────────────────────────────────── */
   --font-sans: 'Geist', 'Inter', 'system-ui', '-apple-system', sans-serif;
 
-  /* ── Tailwind Indigo → Burgundy override ────────────── */
-  --color-indigo-50:  #faf6f5;
-  --color-indigo-100: #f5e8eb;
-  --color-indigo-200: #eacdd5;
-  --color-indigo-300: #dba7b6;
-  --color-indigo-400: #c07a8f;
-  --color-indigo-500: #9e2d4d;
-  --color-indigo-600: #8a1a39;
-  --color-indigo-700: #7B0D2E;
-  --color-indigo-800: #620a25;
-  --color-indigo-900: #4a071b;
-  --color-indigo-950: #2a040f;
+  /* ── Standard Clean Indigo ──────────────────────────── */
+  --color-indigo-50:  #eef2ff;
+  --color-indigo-100: #e0e7ff;
+  --color-indigo-200: #c7d2fe;
+  --color-indigo-300: #a5b4fc;
+  --color-indigo-400: #818cf8;
+  --color-indigo-500: #6366f1;
+  --color-indigo-600: #4f46e5;
+  --color-indigo-700: #4338ca;
+  --color-indigo-800: #3730a3;
+  --color-indigo-900: #312e81;
+  --color-indigo-950: #1e1b4b;
 
-  /* ── Warm Slate override ────────────────────────────── */
-  --color-slate-50:  #faf8f6;
-  --color-slate-100: #f3f0ed;
-  --color-slate-200: #e8e4df;
-  --color-slate-300: #d4cfca;
-  --color-slate-400: #9e9890;
-  --color-slate-500: #736c64;
-  --color-slate-600: #5a5249;
-  --color-slate-700: #443d36;
-  --color-slate-800: #302a24;
-  --color-slate-900: #1f1a15;
-  --color-slate-950: #110e0b;
+  /* ── Standard Clean Slate ───────────────────────────── */
+  --color-slate-50:  #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
 
   /* ── Stitch Generated Tokens ───────────────────────── */
   --color-on-tertiary-fixed-variant: #38485d;
@@ -210,14 +210,21 @@
 
   .glass-card:hover {
     background: var(--color-glass-hover);
-    border-color: rgba(44, 24, 16, 0.1);
+    border-color: rgba(15, 23, 42, 0.08);
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, var(--color-brand-700), var(--color-accent-400));
+    background: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  .bg-grid {
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
   }
 
   .animate-in {
@@ -233,16 +240,16 @@
     font-size: 0.875rem;
     font-weight: 600;
     color: white;
-    background: linear-gradient(135deg, var(--color-brand-600), var(--color-brand-700));
+    background: linear-gradient(135deg, var(--color-brand-900), var(--color-brand-800));
     border: none;
     border-radius: var(--radius-button);
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-    box-shadow: 0 2px 8px rgba(123, 13, 46, 0.25);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
   }
   .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(123, 13, 46, 0.35);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.25);
   }
   .btn-primary:active {
     transform: translateY(0);
@@ -270,7 +277,7 @@
   }
   .btn-secondary:hover {
     background: var(--color-surface-200);
-    border-color: rgba(44, 24, 16, 0.12);
+    border-color: rgba(15, 23, 42, 0.08);
   }
 
   .btn-danger {
@@ -305,7 +312,7 @@
   }
   .input-field:focus {
     border-color: var(--color-brand-600);
-    box-shadow: 0 0 0 3px rgba(123, 13, 46, 0.08);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
   }
   .input-field::placeholder {
     color: var(--color-text-muted);
@@ -322,7 +329,7 @@
     outline: none;
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%239E917A' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%2364748B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
     padding-right: 2rem;
@@ -330,7 +337,7 @@
   }
   .select-field:focus {
     border-color: var(--color-brand-600);
-    box-shadow: 0 0 0 3px rgba(123, 13, 46, 0.08);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
   }
 
   .badge {
@@ -388,10 +395,10 @@
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(123, 13, 46, 0.06);
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.08);
   }
   50% {
-    box-shadow: 0 0 40px rgba(123, 13, 46, 0.14);
+    box-shadow: 0 0 40px rgba(37, 99, 235, 0.18);
   }
 }
 
@@ -455,4 +462,24 @@
 .cesium-viewer-toolbar {
   display: none !important;
 }
+
+/* ── TravelOS High-Tech Utilities ── */
+.gradient-text {
+  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 50%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(15, 23, 42, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.05) 1px, transparent 1px);
+}
+
+.bg-grid-mask {
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 85%);
+}
+
 

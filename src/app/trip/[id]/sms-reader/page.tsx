@@ -22,11 +22,15 @@ import type { TripMember, ItineraryItem, SplitType } from '@/lib/types';
 
 // ── Design Tokens ─────────────────────────────────────────────────────────────
 const COLORS = {
-  burgundy: '#791523',
-  cream: '#eadecd',
-  offWhite: '#fdfbfa',
-  rose: '#b83a4b',
-  deepWine: '#5a0e1a',
+  burgundy: '#0f172a',
+  burgundyLight: '#1e293b',
+  burgundyPale: '#f1f5f9',
+  cream: '#f8fafc',
+  creamDark: '#e2e8f0',
+  offWhite: '#ffffff',
+  rose: '#2563eb',
+  rosePale: '#eff6ff',
+  deepWine: '#0f172a',
 };
 
 // ── Confidence badge helpers ──────────────────────────────────────────────────
@@ -409,7 +413,7 @@ export default function SmsReaderPage() {
             disabled={loading}
             className="w-full py-3.5 px-6 rounded-2xl font-bold text-sm text-white shadow-lg flex items-center justify-center gap-2.5 transition-all cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
             style={{
-              background: 'linear-gradient(135deg, #a32236 0%, #791523 100%)',
+              background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
               border: '1px solid rgba(255,255,255,0.25)',
               boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
             }}

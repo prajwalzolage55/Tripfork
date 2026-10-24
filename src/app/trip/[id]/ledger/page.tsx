@@ -419,13 +419,13 @@ export default function TripLedgerPage() {
 
       case 'PARTICIPANT_LEFT':
         return (
-          <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 space-y-2 text-rose-950 shadow-xs">
+          <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 space-y-2 text-red-950 shadow-xs">
             <div className="flex items-center justify-between">
               <div>
                 <strong className="text-xs block">{p.displayName} (Departed)</strong>
                 <span className="text-[11px] opacity-80">Reason: {p.reason || 'Voluntary departure'}</span>
               </div>
-              <span className="px-2.5 py-0.5 rounded-full bg-rose-200 text-rose-800 text-[11px] font-bold">
+              <span className="px-2.5 py-0.5 rounded-full bg-red-200 text-red-800 text-[11px] font-bold">
                 Inactive
               </span>
             </div>
@@ -458,13 +458,13 @@ export default function TripLedgerPage() {
 
       case 'BOOKING_CANCELLED':
         return (
-          <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 space-y-2 text-rose-950 shadow-xs">
+          <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 space-y-2 text-red-950 shadow-xs">
             <div className="flex items-center justify-between">
               <div>
                 <strong className="text-xs block">{p.label} (Cancelled)</strong>
                 <span className="text-[11px] opacity-80">Reason: {p.reason}</span>
               </div>
-              <span className="text-xs font-mono font-bold text-rose-700">
+              <span className="text-xs font-mono font-bold text-red-700">
                 Penalty: ₹{Number(p.penaltyAmount || 0).toLocaleString('en-IN')}
               </span>
             </div>
@@ -549,7 +549,7 @@ export default function TripLedgerPage() {
             <button
               onClick={handleClearEvents}
               disabled={purging}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-rose-950/80 text-rose-300 text-xs border border-rose-900/50 transition"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-800 text-blue-300 text-xs border border-slate-700 transition"
               title="Remove any dummy or test events"
             >
               <Trash2 size={13} />
@@ -583,7 +583,7 @@ export default function TripLedgerPage() {
           className={`p-4 rounded-xl text-xs font-medium flex items-center justify-between ${
             notification.type === 'success'
               ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
-              : 'bg-rose-50 text-rose-900 border border-rose-200'
+              : 'bg-red-50 text-red-900 border border-red-200'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -637,7 +637,7 @@ export default function TripLedgerPage() {
                           isPositive
                             ? 'bg-emerald-100 text-emerald-800'
                             : isNegative
-                            ? 'bg-rose-100 text-rose-800'
+                            ? 'bg-red-100 text-red-800'
                             : 'bg-slate-200 text-slate-700'
                         }`}
                       >
@@ -771,7 +771,7 @@ export default function TripLedgerPage() {
                       </span>
                     )}
                     {event.type === 'BOOKING_CANCELLED' && (
-                      <span className="text-rose-600">
+                      <span className="text-red-600">
                         Booking cancelled: <strong>{p.label}</strong> (Reason: {p.reason})
                       </span>
                     )}
@@ -781,7 +781,7 @@ export default function TripLedgerPage() {
                       </span>
                     )}
                     {event.type === 'EXPENSE_DELETED' && (
-                      <span className="text-rose-600">
+                      <span className="text-red-600">
                         Expense reversed: #{p.expenseId} (₹{p.originalAmount})
                       </span>
                     )}
@@ -886,7 +886,7 @@ export default function TripLedgerPage() {
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <div className={`font-mono font-bold ${t.impact > 0 ? 'text-emerald-600' : t.impact < 0 ? 'text-rose-600' : 'text-slate-600'}`}>
+                          <div className={`font-mono font-bold ${t.impact > 0 ? 'text-emerald-600' : t.impact < 0 ? 'text-red-600' : 'text-slate-600'}`}>
                             {t.impact > 0 ? `+₹${t.impact.toLocaleString('en-IN')}` : t.impact < 0 ? `-₹${Math.abs(t.impact).toLocaleString('en-IN')}` : '₹0'}
                           </div>
                           <div className="text-[10px] text-slate-400">

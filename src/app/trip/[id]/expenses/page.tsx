@@ -16,10 +16,10 @@ import {
 } from 'lucide-react';
 
 const COLORS = {
-  burgundy: '#791523',
-  cream: '#eadecd',
-  offWhite: '#fdfbfa',
-  rose: '#b83a4b'
+  burgundy: '#0f172a',
+  cream: '#f8fafc',
+  offWhite: '#ffffff',
+  rose: '#2563eb'
 };
 
 const SPLIT_OPTIONS: { value: SplitType; label: string }[] = [

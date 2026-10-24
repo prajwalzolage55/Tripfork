@@ -16,10 +16,10 @@ import Link from 'next/link';
 import { getTripPath } from '@/lib/trip-routing';
 
 const COLORS = {
-  burgundy: '#791523',
-  cream: '#eadecd',
-  offWhite: '#fdfbfa',
-  rose: '#b83a4b'
+  burgundy: '#0f172a',
+  cream: '#f8fafc',
+  offWhite: '#ffffff',
+  rose: '#2563eb'
 };
 
 const staggerContainer: Variants = {
@@ -384,7 +384,7 @@ export default function DashboardPage() {
           <div className="absolute bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full blur-[100px] opacity-30 mix-blend-multiply pointer-events-none" style={{ backgroundColor: COLORS.rose }} />
 
           {/* Mobile-only header (allows opening the sidebar on phones) */}
-          <div className="md:hidden flex items-center justify-between p-4 border-b bg-[#fdfbfa]/90 sticky top-0 z-30" style={{ borderColor: `${COLORS.cream}` }}>
+          <div className="md:hidden flex items-center justify-between p-4 border-b bg-[#ffffff]/90 sticky top-0 z-30" style={{ borderColor: `${COLORS.cream}` }}>
             <Link href="/" className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-xs" style={{ backgroundColor: COLORS.burgundy }}>
                 <Plane className="w-4 h-4 text-white" />
@@ -565,7 +565,7 @@ export default function DashboardPage() {
                 >
                   <div>
                     <div className="flex items-start justify-between gap-4 mb-3">
-                      <h3 className="text-xl font-black tracking-tight text-gray-900 line-clamp-2 leading-snug group-hover:text-[#791523] transition-colors">
+                      <h3 className="text-xl font-black tracking-tight text-gray-900 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors">
                         {trip.name}
                       </h3>
                       <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform group-hover:rotate-45" style={{ backgroundColor: `${COLORS.cream}60`, color: COLORS.burgundy }}>

@@ -42,21 +42,27 @@ import {
   ArrowUpRight,
   LogOut,
   UserCheck,
+  BarChart3,
+  Star,
+  Radio,
+  Terminal,
+  Activity,
 } from 'lucide-react';
+
 import Link from 'next/link';
 
 // Brand Color Palette Tokens
 const COLORS = {
-  burgundy: '#791523',
-  darkBurgundy: '#4a071b',
-  cream: '#eadecd',
-  offWhite: '#fdfbfa',
-  rose: '#d05461',
-  surfaceGold: '#c59362',
-  warmIvory: '#fffbf7',
+  burgundy: '#0f172a', // Deep Slate-900 (replaces burgundy)
+  darkBurgundy: '#020617', // Slate-950
+  cream: '#f8fafc', // Clean light surface (replaces cream)
+  offWhite: '#ffffff', // Pure White
+  rose: '#2563eb', // Modern Tech Blue (replaces pink rose)
+  surfaceGold: '#e2e8f0', // Clean Slate border
+  warmIvory: '#ffffff', // Pure White
   cardBg: '#ffffff',
-  slateDark: '#1f1a15',
-  slateMuted: '#5c4a3d',
+  slateDark: '#0f172a',
+  slateMuted: '#64748b',
 };
 
 // Interactive What-If Scenarios Data
@@ -222,12 +228,11 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen font-['Inter',sans-serif] antialiased selection:bg-[#791523] selection:text-white"
-      style={{ backgroundColor: COLORS.offWhite, color: COLORS.burgundy }}
+      className="min-h-screen font-['Inter',sans-serif] antialiased selection:bg-blue-600 selection:text-white bg-white text-slate-900"
     >
-      {/* ── HERO SECTION WITH FULLSCREEN BACKGROUND VIDEO MATCHING BRAND PALETTE ── */}
-      <section className="relative h-screen overflow-hidden">
-        {/* Background Video */}
+      {/* ── HERO SECTION WITH FULLSCREEN BACKGROUND VIDEO (AIRPLANE CRYSTAL CLEAR & VISIBLE) ── */}
+      <section className="relative h-screen overflow-hidden bg-white">
+        {/* Background Airplane Video */}
         <video
           autoPlay
           muted
@@ -235,7 +240,7 @@ export default function Home() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
           style={{
-            filter: 'contrast(1.06) saturate(1.18) sepia(0.12) hue-rotate(-6deg)',
+            filter: 'contrast(1.05) saturate(1.1)',
           }}
         >
           <source
@@ -245,16 +250,9 @@ export default function Home() {
           Your browser does not support the video tag.
         </video>
 
-        {/* Color Palette Overlay 1: Warm Burgundy Tonal Grade Wash */}
-        <div
-          className="absolute inset-0 z-[1] mix-blend-color pointer-events-none opacity-40"
-          style={{ backgroundColor: COLORS.burgundy }}
-        />
-
-        {/* Color Palette Overlay 2: Soft Gradient from Deep Wine to Warm Off-White Surface */}
-        <div
-          className="absolute inset-0 z-[2] pointer-events-none bg-gradient-to-b from-[#4a071b]/45 via-black/20 to-[#fdfbfa]"
-        />
+        {/* Crisp Light Fades (Replaces dark burgundy overlays so the airplane is crystal clear) */}
+        <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-white/70 via-white/20 to-transparent pointer-events-none z-[1]" />
+        <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-white via-white/40 to-transparent pointer-events-none z-[1]" />
 
         {/* Foreground Content Wrapper */}
         <div className="relative z-10 h-full flex flex-col justify-between">
@@ -267,14 +265,12 @@ export default function Home() {
                 className="flex items-center gap-2.5 transition-transform hover:scale-105 cursor-pointer relative z-50"
               >
                 <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg"
-                  style={{ backgroundColor: COLORS.burgundy }}
+                  className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg bg-slate-900"
                 >
                   <Plane className="w-4 h-4 text-white" />
                 </div>
                 <span
-                  className="text-2xl font-black tracking-tight"
-                  style={{ color: COLORS.burgundy }}
+                  className="text-2xl font-black tracking-tight text-slate-900"
                 >
                   TriFork
                 </span>
@@ -286,8 +282,7 @@ export default function Home() {
                   <Link
                     href="/dashboard"
                     onClick={() => router.push('/dashboard')}
-                    className="px-5 py-2.5 rounded-full font-bold text-sm text-white transition-all hover:scale-105 shadow-md flex items-center gap-1.5 cursor-pointer relative z-50"
-                    style={{ backgroundColor: COLORS.burgundy }}
+                    className="px-5 py-2.5 rounded-full font-bold text-sm text-white transition-all hover:scale-105 shadow-md flex items-center gap-1.5 cursor-pointer relative z-50 bg-slate-900 hover:bg-black"
                     id="nav-dashboard-btn"
                   >
                     <span>Dashboard</span>
@@ -298,7 +293,7 @@ export default function Home() {
                     <Link
                       href="/login"
                       onClick={() => router.push('/login')}
-                      className="px-5 py-2.5 rounded-full font-bold text-sm transition-all hover:scale-105 shadow-sm border border-stone-300 bg-white/80 hover:bg-white text-stone-900 cursor-pointer relative z-50"
+                      className="px-5 py-2.5 rounded-full font-bold text-sm transition-all hover:scale-105 shadow-sm border border-slate-300 bg-white/90 hover:bg-white text-slate-900 cursor-pointer relative z-50"
                       id="nav-login-btn"
                     >
                       Log In
@@ -306,8 +301,7 @@ export default function Home() {
                     <Link
                       href="/signup"
                       onClick={() => router.push('/signup')}
-                      className="px-5 py-2.5 rounded-full text-white font-bold text-sm transition-transform hover:scale-105 shadow-lg flex items-center gap-1.5 cursor-pointer relative z-50"
-                      style={{ backgroundColor: COLORS.burgundy }}
+                      className="px-5 py-2.5 rounded-full text-white font-bold text-sm transition-transform hover:scale-105 shadow-lg flex items-center gap-1.5 cursor-pointer relative z-50 bg-slate-900 hover:bg-black"
                       id="nav-signup-btn"
                     >
                       <span>Get Started</span>
@@ -322,15 +316,14 @@ export default function Home() {
                   <Link
                     href={user ? '/dashboard' : '/login'}
                     onClick={() => router.push(user ? '/dashboard' : '/login')}
-                    className="px-3 py-1.5 rounded-full font-bold text-xs text-white shadow-sm"
-                    style={{ backgroundColor: COLORS.burgundy }}
+                    className="px-3 py-1.5 rounded-full font-bold text-xs text-white shadow-sm bg-slate-900"
                   >
                     {user ? 'Dashboard' : 'Log In'}
                   </Link>
                 )}
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="p-2 text-stone-900 focus:outline-none rounded-lg cursor-pointer"
+                  className="p-2 text-slate-900 focus:outline-none rounded-lg cursor-pointer"
                   aria-label="Toggle Navigation Menu"
                 >
                   {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
@@ -341,7 +334,7 @@ export default function Home() {
             {/* Mobile Menu Dropdown */}
             {mobileMenuOpen && (
               <div className="md:hidden px-6 pt-2 pb-6 max-w-7xl mx-auto animate-in fade-in slide-in-from-top-4 duration-200 relative z-50">
-                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-stone-200 flex flex-col space-y-4">
+                <div className="bg-white/95 backdrop-blur-md rounded-2xl p-6 shadow-xl border border-slate-200 flex flex-col space-y-4">
                   {[
                     { label: 'Start', href: '#start' },
                     { label: 'Features', href: '#features' },
@@ -354,12 +347,12 @@ export default function Home() {
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="text-stone-800 font-bold hover:text-[#791523] transition-colors py-2 px-3 rounded-lg hover:bg-stone-50"
+                      className="text-slate-800 font-bold hover:text-blue-600 transition-colors py-2 px-3 rounded-lg hover:bg-slate-50"
                     >
                       {item.label}
                     </a>
                   ))}
-                  <div className="pt-2 border-t border-stone-100 flex flex-col gap-2">
+                  <div className="pt-2 border-t border-slate-100 flex flex-col gap-2">
                     {user ? (
                       <Link
                         href="/dashboard"
@@ -367,8 +360,7 @@ export default function Home() {
                           setMobileMenuOpen(false);
                           router.push('/dashboard');
                         }}
-                        className="w-full py-3 rounded-full text-white font-bold text-center shadow-md cursor-pointer"
-                        style={{ backgroundColor: COLORS.burgundy }}
+                        className="w-full py-3 rounded-full text-white font-bold text-center shadow-md cursor-pointer bg-slate-900"
                       >
                         Go to Dashboard
                       </Link>
@@ -380,7 +372,7 @@ export default function Home() {
                             setMobileMenuOpen(false);
                             router.push('/login');
                           }}
-                          className="w-full py-2.5 rounded-full text-stone-800 font-bold text-center border border-stone-200 hover:bg-stone-50 cursor-pointer text-sm"
+                          className="w-full py-2.5 rounded-full text-slate-800 font-bold text-center border border-slate-200 hover:bg-slate-50 cursor-pointer text-sm"
                         >
                           Log In
                         </Link>
@@ -390,8 +382,7 @@ export default function Home() {
                             setMobileMenuOpen(false);
                             router.push('/signup');
                           }}
-                          className="w-full py-2.5 rounded-full text-white font-bold text-center shadow-md cursor-pointer text-sm"
-                          style={{ backgroundColor: COLORS.burgundy }}
+                          className="w-full py-2.5 rounded-full text-white font-bold text-center shadow-md cursor-pointer text-sm bg-slate-900"
                         >
                           Get Started Free
                         </Link>
@@ -408,31 +399,25 @@ export default function Home() {
             <div className="max-w-4xl mx-auto flex flex-col items-center -translate-y-4 md:-translate-y-8">
               {/* Brand Badge */}
               <span
-                className="text-xs md:text-sm font-extrabold tracking-widest uppercase mb-4 px-4 py-1.5 rounded-full border shadow-sm backdrop-blur-md"
-                style={{
-                  backgroundColor: `${COLORS.cream}80`,
-                  borderColor: `${COLORS.surfaceGold}60`,
-                  color: COLORS.burgundy,
-                }}
+                className="text-xs md:text-sm font-extrabold tracking-widest uppercase mb-4 px-4 py-1.5 rounded-full border shadow-sm backdrop-blur-md bg-white/90 border-slate-200 text-slate-800"
               >
                 SMART GROUP EXPEDITIONS
               </span>
 
-              {/* Overlapping Two-Line Heading Styled with Brand Palette */}
+              {/* Overlapping Two-Line Heading Styled with High-Contrast TravelOS Typography */}
               <div className="flex flex-col items-center justify-center mb-5 select-none">
-                <h1 className="text-6xl md:text-7xl lg:text-9xl font-light text-stone-500/90 leading-none tracking-tighter">
+                <h1 className="text-6xl md:text-7xl lg:text-9xl font-light text-slate-600 leading-none tracking-tighter">
                   Split Expenses
                 </h1>
                 <h2
-                  className="text-6xl md:text-7xl lg:text-9xl font-black leading-none tracking-tighter -mt-3 md:-mt-6 lg:-mt-8"
-                  style={{ color: COLORS.burgundy }}
+                  className="text-6xl md:text-7xl lg:text-9xl font-black leading-none tracking-tighter -mt-3 md:-mt-6 lg:-mt-8 text-slate-900"
                 >
                   Not Vibes.
                 </h2>
               </div>
 
               {/* Subtitle */}
-              <p className="text-base md:text-xl text-stone-700 mb-6 max-w-2xl font-medium leading-relaxed">
+              <p className="text-base md:text-xl text-slate-800 mb-6 max-w-2xl font-medium leading-relaxed drop-shadow-sm">
                 AI-driven financial ledgers, 3D Cesium travel globes, and live weather twins for your group journeys.
               </p>
 
@@ -442,8 +427,7 @@ export default function Home() {
                   <Link
                     href="/dashboard"
                     onClick={() => router.push('/dashboard')}
-                    className="px-8 py-3.5 rounded-full font-bold text-sm text-white shadow-xl hover:scale-105 transition-all flex items-center gap-2 cursor-pointer border border-white/20"
-                    style={{ backgroundColor: COLORS.burgundy }}
+                    className="px-8 py-3.5 rounded-full font-bold text-sm text-white shadow-xl hover:scale-105 transition-all flex items-center gap-2 cursor-pointer border border-white/20 bg-slate-900 hover:bg-black"
                     id="hero-center-dashboard-btn"
                   >
                     <LayoutDashboard className="w-4 h-4" />
@@ -455,8 +439,7 @@ export default function Home() {
                     <Link
                       href="/login"
                       onClick={() => router.push('/login')}
-                      className="px-7 py-3 rounded-full font-bold text-sm text-white shadow-xl hover:scale-105 transition-all flex items-center gap-2 cursor-pointer border border-white/20"
-                      style={{ backgroundColor: COLORS.burgundy }}
+                      className="px-7 py-3 rounded-full font-bold text-sm text-white shadow-xl hover:scale-105 transition-all flex items-center gap-2 cursor-pointer border border-white/20 bg-slate-900 hover:bg-black"
                       id="hero-center-login-btn"
                     >
                       <LogIn className="w-4 h-4" />
@@ -466,7 +449,7 @@ export default function Home() {
                     <Link
                       href="/signup"
                       onClick={() => router.push('/signup')}
-                      className="px-7 py-3 rounded-full font-bold text-sm bg-white/90 hover:bg-white text-stone-900 shadow-md hover:scale-105 transition-all border border-stone-300 cursor-pointer"
+                      className="px-7 py-3 rounded-full font-bold text-sm bg-white/90 hover:bg-white text-slate-900 shadow-md hover:scale-105 transition-all border border-slate-300 cursor-pointer"
                       id="hero-center-signup-btn"
                     >
                       <span>Get Started</span>
@@ -479,8 +462,8 @@ export default function Home() {
 
           {/* Bottom Spacer / Arrow Indicator */}
           <div className="pb-8 flex justify-center relative z-20">
-            <div className="w-6 h-10 rounded-full border-2 border-stone-400/50 flex items-start justify-center p-1">
-              <div className="w-1.5 h-3 rounded-full bg-stone-500 animate-bounce" />
+            <div className="w-6 h-10 rounded-full border-2 border-slate-400/50 flex items-start justify-center p-1">
+              <div className="w-1.5 h-3 rounded-full bg-slate-600 animate-bounce" />
             </div>
           </div>
         </div>
@@ -494,7 +477,7 @@ export default function Home() {
               className="text-xs font-black uppercase tracking-widest px-3.5 py-1 rounded-full border mb-4 inline-block shadow-sm"
               style={{
                 backgroundColor: COLORS.cream,
-                borderColor: `${COLORS.burgundy}30`,
+                borderColor: "#e2e8f0",
                 color: COLORS.burgundy,
               }}
             >
@@ -561,8 +544,7 @@ export default function Home() {
             {/* Feature 3: Smart Debt Engine & UPI */}
             <div className="p-8 rounded-3xl bg-stone-50 border border-stone-200/80 hover:shadow-xl hover:-translate-y-1 transition-all">
               <div
-                className="w-12 h-12 rounded-2xl flex items-center justify-center text-white mb-6 shadow-md"
-                style={{ backgroundColor: COLORS.darkBurgundy }}
+                className="w-12 h-12 rounded-2xl flex items-center justify-center text-white mb-6 shadow-md bg-slate-800"
               >
                 <CreditCard className="w-6 h-6" />
               </div>
@@ -665,7 +647,7 @@ export default function Home() {
               className="text-xs font-black uppercase tracking-widest px-3.5 py-1 rounded-full border mb-4 inline-block shadow-sm"
               style={{
                 backgroundColor: COLORS.offWhite,
-                borderColor: `${COLORS.burgundy}30`,
+                borderColor: "#e2e8f0",
                 color: COLORS.burgundy,
               }}
             >
@@ -695,15 +677,17 @@ export default function Home() {
                       onClick={() => setActiveScenarioKey(key as keyof typeof SIMULATION_SCENARIOS)}
                       className={`text-left p-3.5 rounded-2xl border transition-all text-xs font-bold flex flex-col justify-between ${
                         isSelected
-                          ? 'border-[#791523] bg-white shadow-md text-[#791523] ring-2 ring-[#791523]/20'
+                          ? 'border-slate-900 bg-white shadow-md text-blue-600 ring-2 ring-slate-900/10'
                           : 'border-stone-200 bg-stone-100/70 text-stone-600 hover:bg-white hover:text-stone-900'
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="truncate">{sc.label}</span>
-                        {isSelected && <CheckCircle2 className="w-4 h-4 text-[#791523] flex-shrink-0" />}
+                      <div className="flex items-center justify-between mb-1.5 gap-2">
+                        <span className="line-clamp-2 leading-snug break-words" title={sc.label}>
+                          {sc.label}
+                        </span>
+                        {isSelected && <CheckCircle2 className="w-4 h-4 text-blue-600 flex-shrink-0" />}
                       </div>
-                      <span className="text-[10px] text-stone-500 font-normal line-clamp-2">
+                      <span className="text-xs text-stone-500 font-normal line-clamp-2 leading-relaxed">
                         {sc.description}
                       </span>
                     </button>
@@ -718,7 +702,7 @@ export default function Home() {
                 <div>
                   <div className="flex items-center gap-2 mb-1.5">
                     <span
-                      className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md text-white"
+                      className="text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-lg text-white"
                       style={{ backgroundColor: COLORS.burgundy }}
                     >
                       Simulated Timeline
@@ -732,15 +716,15 @@ export default function Home() {
 
                 <div className="flex items-center gap-4 bg-stone-50 p-4 rounded-2xl border border-stone-200">
                   <div>
-                    <span className="text-[11px] font-bold text-stone-500 uppercase block">Total Trip Cost</span>
+                    <span className="text-xs font-semibold text-stone-500 uppercase block">Total Trip Cost</span>
                     <span className="text-2xl font-black text-stone-900">₹{currentScenario.totalCost.toLocaleString('en-IN')}</span>
                   </div>
                   <div className="h-8 w-px bg-stone-300" />
                   <div>
-                    <span className="text-[11px] font-bold text-stone-500 uppercase block">Settlements</span>
+                    <span className="text-xs font-semibold text-stone-500 uppercase block">Settlements</span>
                     <span className="text-2xl font-black text-emerald-700 flex items-center gap-1">
                       {currentScenario.settlementFlows.length} transfers
-                      <span className="text-[11px] font-normal text-stone-500">(vs {currentScenario.rawTransfers})</span>
+                      <span className="text-xs font-normal text-stone-500">(vs {currentScenario.rawTransfers})</span>
                     </span>
                   </div>
                 </div>
@@ -748,9 +732,9 @@ export default function Home() {
 
               {/* Members Ledger Grid */}
               <div className="py-8">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-4 flex items-center gap-1.5">
-                  <Users className="w-4 h-4 text-[#791523]" />
-                  Participant Balances under this counterfactual:
+                <h4 className="text-xs font-bold text-stone-600 mb-4 flex items-center gap-1.5">
+                  <Users className="w-4 h-4 text-blue-600" />
+                  Participant balances under this counterfactual:
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {currentScenario.members.map((m, idx) => {
@@ -783,7 +767,7 @@ export default function Home() {
                               ? 'text-emerald-700'
                               : isZero
                               ? 'text-stone-600'
-                              : 'text-rose-700'
+                              : 'text-red-700'
                           }`}
                         >
                           <span>{isCredit ? 'Receives' : isZero ? 'Settled' : 'Owes'}</span>
@@ -799,9 +783,9 @@ export default function Home() {
 
               {/* Minimal Transaction Routing Outputs */}
               <div className="bg-stone-50 p-6 rounded-2xl border border-stone-200 mb-6">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-600 mb-3 flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-stone-600 mb-3 flex items-center gap-1.5">
                   <Zap className="w-4 h-4 text-amber-600" />
-                  Router Output: Minimum Transfers Needed ({currentScenario.settlementFlows.length} Clean Payments)
+                  Router output: minimum transfers needed ({currentScenario.settlementFlows.length} clean payments)
                 </h4>
                 <div className="space-y-2">
                   {currentScenario.settlementFlows.map((flow, i) => (
@@ -810,11 +794,11 @@ export default function Home() {
                       className="bg-white p-3 rounded-xl border border-stone-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-semibold"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-rose-700 font-bold">{flow.from}</span>
+                        <span className="text-red-700 font-bold">{flow.from}</span>
                         <ArrowRight className="w-3.5 h-3.5 text-stone-400" />
                         <span className="text-emerald-700 font-bold">{flow.to}</span>
                         <span className="text-stone-400">via</span>
-                        <span className="text-stone-600 bg-stone-100 px-2 py-0.5 rounded text-[11px]">
+                        <span className="text-stone-600 bg-stone-100 px-2.5 py-0.5 rounded-lg text-xs font-medium">
                           {flow.via}
                         </span>
                       </div>
@@ -860,7 +844,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest px-3.5 py-1 rounded-full bg-rose-950/80 border border-rose-500/30 text-rose-300 mb-4 inline-block">
+              <span className="text-xs font-bold uppercase tracking-widest px-3.5 py-1 rounded-full bg-blue-950/80 border border-blue-500/30 text-blue-300 mb-4 inline-block">
                 GEOSPATIAL ITINERARY ENGINE
               </span>
               <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6">
@@ -875,7 +859,7 @@ export default function Home() {
                 <div className="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
                   <Globe className="w-5 h-5 text-cyan-400 mt-1 flex-shrink-0" />
                   <div>
-                    <h4 className="font-bold text-sm text-white">Photorealistic 3D Earth Terrain</h4>
+                    <h3 className="font-bold text-sm text-white">Photorealistic 3D Earth Terrain</h3>
                     <p className="text-stone-400 text-xs">
                       Fly into mountain passes, coastal routes, and urban centers with CesiumJS terrain tiles.
                     </p>
@@ -885,7 +869,7 @@ export default function Home() {
                 <div className="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
                   <CloudSun className="w-5 h-5 text-amber-400 mt-1 flex-shrink-0" />
                   <div>
-                    <h4 className="font-bold text-sm text-white">Live Meteorological Digital Twin</h4>
+                    <h3 className="font-bold text-sm text-white">Live Meteorological Digital Twin</h3>
                     <p className="text-stone-400 text-xs">
                       OpenWeather integration provides real-time wind speed, temperature, Doppler clouds, and storm alerts.
                     </p>
@@ -893,9 +877,9 @@ export default function Home() {
                 </div>
 
                 <div className="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
-                  <TrendingUp className="w-5 h-5 text-rose-400 mt-1 flex-shrink-0" />
+                  <TrendingUp className="w-5 h-5 text-blue-500 mt-1 flex-shrink-0" />
                   <div>
-                    <h4 className="font-bold text-sm text-white">Cascading Delay Impact Predictor</h4>
+                    <h3 className="font-bold text-sm text-white">Cascading Delay Impact Predictor</h3>
                     <p className="text-stone-400 text-xs">
                       If bad weather threatens a transfer, TriFork alerts the group and calculates cost ripples of rescheduling.
                     </p>
@@ -915,13 +899,13 @@ export default function Home() {
 
             {/* Visual Graphic Mockup */}
             <div className="relative">
-              <div className="bg-gradient-to-tr from-stone-800 to-stone-950 p-6 rounded-3xl border border-white/15 shadow-2xl relative overflow-hidden">
+              <div className="bg-gradient-to-tr from-stone-800 to-stone-950 p-6 rounded-2xl border border-white/15 shadow-2xl relative overflow-hidden">
                 <div className="flex items-center justify-between pb-4 border-b border-white/10 text-xs">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-rose-500 animate-pulse" />
+                    <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse" />
                     <span className="font-bold">Cesium 3D Viewport — Goa Coastal Circuit</span>
                   </div>
-                  <span className="text-emerald-400 font-mono text-[11px]">28.4°C • Clear Skies</span>
+                  <span className="text-emerald-400 font-mono text-xs">28.4°C • Clear Skies</span>
                 </div>
 
                 {/* Simulated Globe Visual */}
@@ -930,10 +914,10 @@ export default function Home() {
                   <div className="relative z-10 text-center">
                     <Globe className="w-20 h-20 text-cyan-400/80 mx-auto mb-3 animate-spin [animation-duration:30s]" />
                     <span className="text-xs font-mono text-cyan-300 block">WAYPOINT CLUSTER ACTIVE</span>
-                    <span className="text-[11px] text-stone-400">4 Destination Stops Plotted • 3D Corridors Rendered</span>
+                    <span className="text-xs text-stone-400">4 Destination Stops Plotted • 3D Corridors Rendered</span>
                   </div>
 
-                  <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/15 text-[10px] text-stone-300">
+                  <div className="absolute bottom-3 left-3 bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/15 text-xs text-stone-300">
                     Lat: 15.2993° N • Lon: 74.1240° E
                   </div>
                 </div>
@@ -941,11 +925,11 @@ export default function Home() {
                 {/* Itinerary Waypoints Preview */}
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="bg-white/5 p-3 rounded-xl border border-white/10">
-                    <span className="text-[10px] text-stone-400 block">Stop 1 • 10:00 AM</span>
+                    <span className="text-xs text-stone-400 block">Stop 1 • 10:00 AM</span>
                     <span className="font-bold text-white">Anjuna Beach Villa</span>
                   </div>
                   <div className="bg-white/5 p-3 rounded-xl border border-white/10">
-                    <span className="text-[10px] text-stone-400 block">Stop 2 • 02:30 PM</span>
+                    <span className="text-xs text-stone-400 block">Stop 2 • 02:30 PM</span>
                     <span className="font-bold text-white">Vagator Scuba Point</span>
                   </div>
                 </div>
@@ -963,7 +947,7 @@ export default function Home() {
               className="text-xs font-black uppercase tracking-widest px-3.5 py-1 rounded-full border mb-4 inline-block shadow-sm"
               style={{
                 backgroundColor: COLORS.cream,
-                borderColor: `${COLORS.burgundy}30`,
+                borderColor: "#e2e8f0",
                 color: COLORS.burgundy,
               }}
             >
@@ -991,7 +975,7 @@ export default function Home() {
                 If A owes B ₹1,000, and B owes C ₹1,000, TriFork eliminates B from the middle and routes A directly to C.
                 Even in complex 10-person trips, settlements collapse to minimum transfers.
               </p>
-              <div className="text-xs font-semibold text-[#791523] bg-rose-50 p-3 rounded-xl border border-rose-200/60">
+              <div className="text-xs font-semibold text-blue-600 bg-blue-50 p-3 rounded-xl border border-blue-200/60">
                 Reduces 40+ back-and-forth transfers down to 3 simple payments.
               </div>
             </div>
@@ -1041,7 +1025,7 @@ export default function Home() {
               className="text-xs font-black uppercase tracking-widest px-3.5 py-1 rounded-full border mb-4 inline-block shadow-sm"
               style={{
                 backgroundColor: COLORS.cream,
-                borderColor: `${COLORS.burgundy}30`,
+                borderColor: "#e2e8f0",
                 color: COLORS.burgundy,
               }}
             >
@@ -1061,7 +1045,7 @@ export default function Home() {
             <div className="bg-white p-8 rounded-3xl border border-stone-200 shadow-xl">
               <div className="flex items-center justify-between mb-6 pb-4 border-b border-stone-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-rose-100 text-[#791523] flex items-center justify-center font-bold">
+                  <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
                     <Users className="w-5 h-5" />
                   </div>
                   <div>
@@ -1150,7 +1134,7 @@ export default function Home() {
               className="text-xs font-black uppercase tracking-widest px-3.5 py-1 rounded-full border mb-4 inline-block shadow-sm"
               style={{
                 backgroundColor: COLORS.cream,
-                borderColor: `${COLORS.burgundy}30`,
+                borderColor: "#e2e8f0",
                 color: COLORS.burgundy,
               }}
             >
@@ -1203,8 +1187,8 @@ export default function Home() {
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-2xl font-black text-[#791523]/30">{st.step}</span>
-                    <st.icon className="w-5 h-5 text-[#791523]" />
+                    <span className="text-2xl font-black text-slate-300">{st.step}</span>
+                    <st.icon className="w-5 h-5 text-blue-600" />
                   </div>
                   <h3 className="text-base font-bold text-stone-900 mb-2">{st.title}</h3>
                   <p className="text-xs text-stone-600 leading-relaxed">{st.desc}</p>
@@ -1223,7 +1207,7 @@ export default function Home() {
               className="text-xs font-black uppercase tracking-widest px-3.5 py-1 rounded-full border mb-4 inline-block shadow-sm"
               style={{
                 backgroundColor: COLORS.offWhite,
-                borderColor: `${COLORS.burgundy}30`,
+                borderColor: "#e2e8f0",
                 color: COLORS.burgundy,
               }}
             >
@@ -1242,7 +1226,7 @@ export default function Home() {
               <thead>
                 <tr className="border-b border-stone-200 bg-stone-50">
                   <th className="py-4 px-6 font-bold text-stone-900">Platform Capability</th>
-                  <th className="py-4 px-6 font-bold text-[#791523] bg-rose-50/70">TriFork Platform</th>
+                  <th className="py-4 px-6 font-bold text-blue-600 bg-blue-50/70">TriFork Platform</th>
                   <th className="py-4 px-6 font-semibold text-stone-600">Splitwise</th>
                   <th className="py-4 px-6 font-semibold text-stone-600">Google Sheets / Excel</th>
                 </tr>
@@ -1300,7 +1284,7 @@ export default function Home() {
                 ].map((row, i) => (
                   <tr key={i} className="hover:bg-stone-50/80 transition-colors">
                     <td className="py-4 px-6 font-bold text-stone-900">{row.f}</td>
-                    <td className="py-4 px-6 font-semibold text-[#791523] bg-rose-50/40">
+                    <td className="py-4 px-6 font-semibold text-blue-600 bg-blue-50/40">
                       <div className="flex items-center gap-1.5">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                         <span>{row.tf}</span>
@@ -1324,7 +1308,7 @@ export default function Home() {
               className="text-xs font-black uppercase tracking-widest px-3.5 py-1 rounded-full border mb-4 inline-block shadow-sm"
               style={{
                 backgroundColor: COLORS.cream,
-                borderColor: `${COLORS.burgundy}30`,
+                borderColor: "#e2e8f0",
                 color: COLORS.burgundy,
               }}
             >
@@ -1348,12 +1332,12 @@ export default function Home() {
                 >
                   <button
                     onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="w-full text-left px-6 py-5 flex items-center justify-between gap-4 font-bold text-stone-900 hover:text-[#791523] transition-colors"
+                    className="w-full text-left px-6 py-5 flex items-center justify-between gap-4 font-bold text-stone-900 hover:text-blue-600 transition-colors"
                   >
                     <span className="text-base">{faq.q}</span>
                     <ChevronDown
                       className={`w-5 h-5 text-stone-500 transition-transform duration-200 flex-shrink-0 ${
-                        isOpen ? 'rotate-180 text-[#791523]' : ''
+                        isOpen ? 'rotate-180 text-blue-600' : ''
                       }`}
                     />
                   </button>
@@ -1440,8 +1424,7 @@ export default function Home() {
 
       {/* ── FOOTER (ALL WORKING LINKS & CONDITIONAL AUTH) ── */}
       <footer
-        className="py-14 px-8 border-t border-stone-200"
-        style={{ backgroundColor: COLORS.burgundy, color: COLORS.cream }}
+        className="py-14 px-8 border-t border-slate-800 bg-slate-950 text-slate-300"
       >
         <div className="max-w-7xl mx-auto flex flex-col gap-10">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-8 border-b border-white/10">
@@ -1609,7 +1592,7 @@ export default function Home() {
                         onChange={e =>
                           setTripDetails({ ...tripDetails, origin: e.target.value })
                         }
-                        className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-semibold text-stone-900 focus:outline-none focus:border-[#791523] transition-colors"
+                        className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-semibold text-stone-900 focus:outline-none focus:border-slate-900 transition-colors"
                         required
                       />
                     </div>
@@ -1623,7 +1606,7 @@ export default function Home() {
                         onChange={e =>
                           setTripDetails({ ...tripDetails, destination: e.target.value })
                         }
-                        className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-semibold text-stone-900 focus:outline-none focus:border-[#791523] transition-colors"
+                        className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-semibold text-stone-900 focus:outline-none focus:border-slate-900 transition-colors"
                         required
                       />
                     </div>
@@ -1640,7 +1623,7 @@ export default function Home() {
                         onChange={e =>
                           setTripDetails({ ...tripDetails, date: e.target.value })
                         }
-                        className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-semibold text-stone-900 focus:outline-none focus:border-[#791523] transition-colors"
+                        className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-semibold text-stone-900 focus:outline-none focus:border-slate-900 transition-colors"
                         required
                       />
                     </div>
@@ -1653,7 +1636,7 @@ export default function Home() {
                         onChange={e =>
                           setTripDetails({ ...tripDetails, travelers: e.target.value })
                         }
-                        className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-semibold text-stone-900 focus:outline-none focus:border-[#791523] transition-colors"
+                        className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-semibold text-stone-900 focus:outline-none focus:border-slate-900 transition-colors"
                       >
                         {[2, 3, 4, 5, 6, 8, 10, 15, 20].map(num => (
                           <option key={num} value={num}>
@@ -1673,7 +1656,7 @@ export default function Home() {
                       onChange={e =>
                         setTripDetails({ ...tripDetails, tripType: e.target.value })
                       }
-                      className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-semibold text-stone-900 focus:outline-none focus:border-[#791523] transition-colors"
+                      className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-semibold text-stone-900 focus:outline-none focus:border-slate-900 transition-colors"
                     >
                       <option value="Coastal Explorer">Coastal Explorer (Beaches, Cafes & Watersports)</option>
                       <option value="Mountain Sanctuary">Mountain Sanctuary (Trekking & High Passes)</option>

@@ -1004,8 +1004,8 @@ export default function ItineraryMap({
       {/* Load Error State */}
       {loadError && (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-[#0B0F19]/90 text-white p-6 text-center">
-          <AlertTriangle className="w-10 h-10 text-rose-500 mb-2" />
-          <p className="text-sm font-bold text-rose-300">Cesium 3D Globe Initialization Notice</p>
+          <AlertTriangle className="w-10 h-10 text-amber-500 mb-2" />
+          <p className="text-sm font-bold text-amber-300">Cesium 3D Globe Initialization Notice</p>
           <p className="text-xs text-stone-400 max-w-sm mt-1 mb-4">{loadError}</p>
           <button
             onClick={() => window.location.reload()}
@@ -1149,7 +1149,7 @@ export default function ItineraryMap({
         {showPropagationControls && (
           <div className="pointer-events-auto flex items-center gap-3 px-3 py-2 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-700/60 shadow-lg text-white">
             <div className="flex items-center gap-1.5">
-              <Activity className="w-4 h-4 text-rose-400" />
+              <Activity className="w-4 h-4 text-blue-500" />
               <span className="text-[11px] font-bold">Digital Twin Perimeter:</span>
             </div>
             <div className="flex items-center gap-2">
@@ -1160,9 +1160,9 @@ export default function ItineraryMap({
                 step="5"
                 value={propagationRadiusKm}
                 onChange={e => setPropagationRadiusKm(Number(e.target.value))}
-                className="w-24 accent-rose-500 cursor-pointer h-1.5 bg-slate-700 rounded-lg"
+                className="w-24 accent-blue-500 cursor-pointer h-1.5 bg-slate-700 rounded-lg"
               />
-              <span className="text-[11px] font-extrabold text-rose-300 w-10">
+              <span className="text-[11px] font-extrabold text-blue-400 w-10">
                 {propagationRadiusKm} km
               </span>
             </div>

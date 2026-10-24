@@ -25,8 +25,15 @@ import {
 } from 'lucide-react';
 
 const COLORS = {
-  burgundy: '#791523', cream: '#eadecd', offWhite: '#fdfbfa', rose: '#b83a4b',
-  rosePale: '#f8e8ea', burgundyLight: '#9a2a3a', burgundyPale: '#f5e6e9', creamDark: '#c9b89e',
+  burgundy: '#0f172a',
+  burgundyLight: '#1e293b',
+  burgundyPale: '#f1f5f9',
+  cream: '#f8fafc',
+  creamDark: '#e2e8f0',
+  offWhite: '#ffffff',
+  rose: '#2563eb',
+  rosePale: '#eff6ff',
+  deepWine: '#0f172a',
 };
 
 function typeIcon(type: string) {
@@ -394,7 +401,7 @@ export default function PersonalImpactLensPage() {
                   <p style={{ fontSize: '0.8rem', color: '#666', marginBottom: '1.5rem' }}>Every expense is mathematically decomposed into sub-components, occupancy allocations, and refund credits with cited rules:</p>
                   <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
                     {(profile.hierarchicalBreakdown || []).map((item, idx) => (
-                      <div key={idx} style={{ padding: '1rem', borderRadius: '0.75rem', border: `1px solid ${COLORS.cream}`, background: '#fdfbfa' }}>
+                      <div key={idx} style={{ padding: '1rem', borderRadius: '0.75rem', border: `1px solid ${COLORS.cream}`, background: '#ffffff' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                           <div style={{ fontSize: '0.9rem', fontWeight: 800, color: COLORS.burgundy }}><span style={{ textTransform: 'capitalize', color: '#888', fontWeight: 600, marginRight: '0.5rem', fontSize: '0.75rem' }}>{item.category}</span> {item.itemLabel}</div>
                           <div style={{ textAlign: 'right', fontSize: '1rem', fontWeight: 900, color: COLORS.burgundy }}><span style={{ fontSize: '0.65rem', color: '#aaa', display: 'block' }}>Your Share</span> ₹{(item.myTotalShare ?? 0).toLocaleString('en-IN')}</div>
@@ -425,7 +432,7 @@ export default function PersonalImpactLensPage() {
               ) : (
                 <div style={{ display: 'grid', gap: '0.75rem' }}>
                   {trace.map((tItem, idx) => (
-                    <div key={idx} style={{ padding: '1rem', borderRadius: '0.75rem', border: `1px solid ${COLORS.cream}`, background: '#fdfbfa' }}>
+                    <div key={idx} style={{ padding: '1rem', borderRadius: '0.75rem', border: `1px solid ${COLORS.cream}`, background: '#ffffff' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                         <div><span style={{ fontSize: '0.65rem', fontWeight: 700, padding: '0.15rem 0.4rem', borderRadius: '4px', background: '#e2e8f0', color: '#334155', marginRight: '0.5rem' }}>{tItem.eventType}</span> <span style={{ fontSize: '0.7rem', color: '#888' }}>{new Date(tItem.timestamp || Date.now()).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span></div>
                         <div style={{ textAlign: 'right' }}>

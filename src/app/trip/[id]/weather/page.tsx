@@ -14,12 +14,6 @@ import {
 import ItineraryMap from '@/components/ItineraryMap';
 import { KNOWN_COORDINATES } from '@/lib/geocoding';
 import {
-  getDestinationSocialSignals,
-  analyzeSocialSignals,
-  type SocialSignal,
-  type SentimentSummary,
-} from '@/lib/social-signals';
-import {
   runDigitalTwinSimulation,
   PRESET_SCENARIOS,
   type WeatherSimParams,
@@ -36,10 +30,10 @@ import {
 import Link from 'next/link';
 
 const COLORS = {
-  burgundy: '#791523',
-  cream: '#eadecd',
-  offWhite: '#fdfbfa',
-  rose: '#b83a4b'
+  burgundy: '#0f172a',
+  cream: '#f8fafc',
+  offWhite: '#ffffff',
+  rose: '#2563eb'
 };
 
 // Generate realistic destination-tailored entities for the digital twin if empty
@@ -409,20 +403,9 @@ export default function WeatherDigitalTwinPage() {
   const [trip, setTrip] = useState<Trip | null>(null);
   const [items, setItems] = useState<ItineraryItem[]>([]);
   const [weatherReport, setWeatherReport] = useState<LiveWeatherReport | null>(null);
-  const [socialSignals, setSocialSignals] = useState<SocialSignal[]>([]);
-  const [sentimentSummary, setSentimentSummary] = useState<SentimentSummary | null>(null);
-  const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
+      const [highlightedItemId, setHighlightedItemId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
-
-  // Social Signal Filter & Submission Modal
-  const [signalFilter, setSignalFilter] = useState<'all' | 'caution' | 'positive' | 'anomaly'>('all');
-  const [showSubmitModal, setShowSubmitModal] = useState<boolean>(false);
-  const [formContent, setFormContent] = useState('');
-  const [formLocation, setFormLocation] = useState('');
-  const [formSentiment, setFormSentiment] = useState<'positive' | 'neutral' | 'caution' | 'warning'>('caution');
-  const [formAnomaly, setFormAnomaly] = useState(false);
-  const [submittingReport, setSubmittingReport] = useState(false);
 
   // ── REQUIREMENT 4: DIGITAL TWIN WHAT-IF SIMULATION STATE ──
   const [simulationActive, setSimulationActive] = useState<boolean>(false);
@@ -517,18 +500,11 @@ export default function WeatherDigitalTwinPage() {
           });
         }
 
-        // Load Real-World Social Signals
-        const signals = getDestinationSocialSignals(destination, report);
-        setSocialSignals(signals);
-        setSentimentSummary(analyzeSocialSignals(signals));
-      } else {
+        } else {
         const report = await fetchLiveWeather('Goa');
         setWeatherReport(report);
         setItems(generateSampleDigitalTwinEntities('Goa', 'preview', report?.current.coord));
-        const signals = getDestinationSocialSignals('Goa', report);
-        setSocialSignals(signals);
-        setSentimentSummary(analyzeSocialSignals(signals));
-      }
+        }
 
     } catch (err) {
       console.error('Failed to load live weather:', err);
@@ -560,10 +536,7 @@ export default function WeatherDigitalTwinPage() {
         });
       }
 
-      const signals = getDestinationSocialSignals(dest, report);
-      setSocialSignals(signals);
-      setSentimentSummary(analyzeSocialSignals(signals));
-    } catch (e) {
+      } catch (e) {
       console.warn('Weather sync error:', e);
     } finally {
       setSyncing(false);
@@ -615,77 +588,6 @@ export default function WeatherDigitalTwinPage() {
     }
   }
 
-  function handleCorroborate(signalId: string) {
-    setSocialSignals(prev =>
-      prev.map(s => {
-        if (s.id === signalId) {
-          return {
-            ...s,
-            metrics: { ...s.metrics, corroborations: s.metrics.corroborations + 1 }
-          };
-        }
-        return s;
-      })
-    );
-  }
-
-  async function handleSubmitCommunityReport(e: React.FormEvent) {
-    e.preventDefault();
-    if (!formContent.trim()) return;
-
-    setSubmittingReport(true);
-    try {
-      const dest = trip?.destination || trip?.name || weatherReport?.destination || 'Destination';
-      const defaultCoords = weatherReport?.current.coord 
-        ? [weatherReport.current.coord.lat, weatherReport.current.coord.lon]
-        : (KNOWN_COORDINATES[dest.toLowerCase().replace(/[^a-z]/g, '')] || [15.2993, 74.1240]);
-
-      const newSig: SocialSignal = {
-        id: `user-sig-${Date.now()}`,
-        source: 'community_report',
-        platform_name: 'Verified Trip Member Field Report',
-        author: {
-          name: 'You (Group Explorer)',
-          handle: '@active_member',
-          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
-          verified: true,
-          role: 'Traveler',
-        },
-        content: formContent.trim(),
-        timestamp: 'Just now',
-        location_name: formLocation.trim() || dest,
-        coords: {
-          lat: defaultCoords[0] + (Math.random() * 0.02 - 0.01),
-          lon: defaultCoords[1] + (Math.random() * 0.02 - 0.01),
-        },
-        sentiment: formSentiment,
-        sentiment_score: formSentiment === 'positive' ? 95 : formSentiment === 'caution' ? 60 : 35,
-        tags: ['#LiveFieldReport', '#CommunityAlert', '#DigitalTwin'],
-        metrics: { likes: 1, shares: 0, corroborations: 1 },
-        anomaly_detected: formAnomaly,
-        anomaly_description: formAnomaly ? 'Ground-reported weather variation.' : undefined,
-      };
-
-      const updated = [newSig, ...socialSignals];
-      setSocialSignals(updated);
-      setSentimentSummary(analyzeSocialSignals(updated));
-      setFormContent('');
-      setFormLocation('');
-      setShowSubmitModal(false);
-    } finally {
-      setSubmittingReport(false);
-    }
-  }
-
-  // Filtered signals for the feed
-  const filteredSignals = useMemo(() => {
-    if (signalFilter === 'all') return socialSignals;
-    if (signalFilter === 'caution') return socialSignals.filter(s => s.sentiment === 'caution' || s.sentiment === 'warning');
-    if (signalFilter === 'positive') return socialSignals.filter(s => s.sentiment === 'positive');
-    if (signalFilter === 'anomaly') return socialSignals.filter(s => s.anomaly_detected);
-    return socialSignals;
-  }, [socialSignals, signalFilter]);
-
   function formatDayDate(dateStr: string) {
     if (!dateStr) return '';
     try {
@@ -721,7 +623,7 @@ export default function WeatherDigitalTwinPage() {
               </span>
 
               {simulationActive ? (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-rose-500 text-white shadow-md animate-pulse">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-blue-600 text-white shadow-md animate-pulse">
                   <Zap className="w-3.5 h-3.5 text-yellow-300" />
                   What-If Counterfactual Mode Active
                 </span>
@@ -771,7 +673,7 @@ export default function WeatherDigitalTwinPage() {
               style={{ backgroundColor: COLORS.burgundy }}
             >
               <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
-              <span>{syncing ? 'Syncing Feeds...' : 'Sync Live Weather & Signals'}</span>
+              <span>{syncing ? 'Syncing Feeds...' : 'Sync Live Weather'}</span>
             </button>
           </div>
         </div>
@@ -786,14 +688,14 @@ export default function WeatherDigitalTwinPage() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
           <div>
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40">
-                <Sliders className="w-4 h-4 text-rose-400" />
+              <span className="p-2 rounded-xl bg-blue-500/10 text-blue-300 border border-blue-500/40">
+                <Sliders className="w-4 h-4 text-blue-500" />
               </span>
               <div>
                 <h2 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
                   <span>Digital Twin What-If & Counterfactual Scenario Simulator</span>
                   {simulationActive && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-500 text-white">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-600 text-white">
                       SIMULATION ACTIVE
                     </span>
                   )}
@@ -845,7 +747,7 @@ export default function WeatherDigitalTwinPage() {
                   onClick={() => handleSelectPreset(preset.key)}
                   className={`p-3 rounded-2xl border text-left transition-all ${
                     isSelected
-                      ? 'bg-rose-600/90 border-rose-400 text-white shadow-lg ring-2 ring-rose-400/50'
+                      ? 'bg-blue-600 border-blue-400 text-white shadow-lg ring-2 ring-blue-400/50'
                       : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white'
                   }`}
                 >
@@ -948,9 +850,9 @@ export default function WeatherDigitalTwinPage() {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-bold">
               <span className="text-slate-300 flex items-center gap-1">
-                <Radio className="w-3.5 h-3.5 text-rose-400" /> Storm Radius
+                <Radio className="w-3.5 h-3.5 text-blue-500" /> Storm Radius
               </span>
-              <span className="text-rose-300 font-mono font-black">{simParams.propagation_radius_km} km</span>
+              <span className="text-blue-400 font-mono font-black">{simParams.propagation_radius_km} km</span>
             </div>
             <input
               type="range"
@@ -959,7 +861,7 @@ export default function WeatherDigitalTwinPage() {
               step="5"
               value={simParams.propagation_radius_km}
               onChange={e => handleSliderChange('propagation_radius_km', Number(e.target.value))}
-              className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-rose-400"
+              className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
             />
             <span className="text-[10px] text-slate-400 block">Simulated storm front coverage</span>
           </div>
@@ -975,7 +877,7 @@ export default function WeatherDigitalTwinPage() {
               <span>SYSTEM VIABILITY</span>
               <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
                 simulationResult.overall_system_viability_score < 40
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                  ? 'bg-blue-500/10 text-blue-300 border border-blue-500/40'
                   : simulationResult.overall_system_viability_score < 70
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                   : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
@@ -991,7 +893,7 @@ export default function WeatherDigitalTwinPage() {
               <div
                 style={{ width: `${simulationResult.overall_system_viability_score}%` }}
                 className={`h-full transition-all duration-300 ${
-                  simulationResult.overall_system_viability_score < 40 ? 'bg-rose-500' : simulationResult.overall_system_viability_score < 70 ? 'bg-amber-400' : 'bg-emerald-500'
+                  simulationResult.overall_system_viability_score < 40 ? 'bg-blue-600' : simulationResult.overall_system_viability_score < 70 ? 'bg-amber-400' : 'bg-emerald-500'
                 }`}
               />
             </div>
@@ -1022,7 +924,7 @@ export default function WeatherDigitalTwinPage() {
             </div>
             <div className="flex items-center justify-between text-xs pt-1">
               <span className="text-slate-300">Outdoor Sightseeing:</span>
-              <span className="font-extrabold text-rose-400">{simulationResult.attraction_demand_shift}%</span>
+              <span className="font-extrabold text-blue-500">{simulationResult.attraction_demand_shift}%</span>
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-300">Indoor Dining Surge:</span>
@@ -1074,7 +976,7 @@ export default function WeatherDigitalTwinPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
           <div>
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-rose-50 text-rose-600 border border-rose-200/60 shadow-2xs">
+              <span className="p-2 rounded-xl bg-red-50 text-red-600 border border-red-200/60 shadow-2xs">
                 <Navigation className="w-4 h-4" />
               </span>
               <div>
@@ -1084,7 +986,7 @@ export default function WeatherDigitalTwinPage() {
                 <p className="text-xs text-slate-500">
                   {simulationActive 
                     ? `Simulating counterfactual: ${simParams.rain_intensity_mm}mm/h rain, ${simParams.temperature_c}°C temp, ${simParams.wind_speed_kmh}km/h gusts within ${simParams.propagation_radius_km}km perimeter.`
-                    : 'Interactive Leaflet map displaying real-time OpenWeather radar tiles, entity vulnerability halos, propagation storm circles, and geotagged traveler social signals.'}
+                    : 'Interactive Leaflet map displaying real-time OpenWeather radar tiles, entity vulnerability halos, and propagation storm circles.'}
                 </p>
               </div>
             </div>
@@ -1092,8 +994,8 @@ export default function WeatherDigitalTwinPage() {
 
           <div className="flex items-center gap-2 text-xs">
             {simulationActive ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-rose-100 text-rose-800 font-extrabold border border-rose-300 animate-pulse">
-                <Zap className="w-3.5 h-3.5 text-rose-600" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-red-100 text-red-800 font-extrabold border border-blue-300 animate-pulse">
+                <Zap className="w-3.5 h-3.5 text-red-600" />
                 <span>Map Reflecting What-If Parameters</span>
               </span>
             ) : (
@@ -1129,7 +1031,7 @@ export default function WeatherDigitalTwinPage() {
                   condition: simParams.rain_intensity_mm > 30 ? 'Rain' : simParams.temperature_c < 0 ? 'Snow' : weatherReport!.current.condition,
                 }
               } : weatherReport}
-              socialSignals={socialSignals}
+              
               initialDigitalTwinMode={true}
               initialWeatherLayer={simulationActive && simParams.rain_intensity_mm > 0 ? 'precipitation' : 'precipitation'}
               showPropagationControls={true}
@@ -1138,28 +1040,29 @@ export default function WeatherDigitalTwinPage() {
 
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className={`w-2.5 h-2.5 rounded-full ${simulationActive ? 'bg-rose-500 animate-ping' : 'bg-emerald-500 animate-pulse'}`} />
+                <span className={`w-2.5 h-2.5 rounded-full ${simulationActive ? 'bg-blue-600 animate-ping' : 'bg-emerald-500 animate-pulse'}`} />
                 <span className="font-semibold text-slate-800">
                   {simulationActive ? 'Simulated Digital Twin Geometry' : 'Leaflet Digital Twin Engine'}
                 </span>
                 <span className="text-slate-400">•</span>
-                <span>Click pins for micro-climate diagnostics; click 💬 pins for traveler field reports.</span>
+                <span>Click pins for micro-climate diagnostics and active vulnerability status.</span>
               </div>
               <span className="text-indigo-600 font-bold">
-                {items.length} Itinerary Entities • {socialSignals.length} Geotagged Signals
+                {items.length} Itinerary Entities Monitored
               </span>
             </div>
           </div>
 
           {/* Side Entity Vulnerability Diagnostics Matrix (4 Columns) */}
-          <div className="lg:col-span-4 flex flex-col justify-between space-y-3">
+          <div className="lg:col-span-4 flex flex-col space-y-3">
+            {/* 1. Twin Vulnerability Index */}
             <div className="p-4 rounded-2xl bg-slate-900 text-white shadow-md space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <Radio className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+                  <Radio className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
                   Twin Vulnerability Index
                 </span>
-                <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-300 border border-blue-500/30">
                   {simulationActive ? 'Simulated' : 'Live'}
                 </span>
               </div>
@@ -1170,8 +1073,89 @@ export default function WeatherDigitalTwinPage() {
               </p>
             </div>
 
-            {/* List of Impacted Entities (dynamically backed by simulation results) */}
-            <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
+            {/* 2. Atmospheric Sensor Telemetry (Filled right alongside the map) */}
+            {weatherReport && (
+              <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Atmospheric Telemetry
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-500">
+                    {simulationActive ? '⚡ Counterfactual Mode' : 'OpenWeather Feed'}
+                  </span>
+                </div>
+
+                <div className="flex items-baseline justify-between">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-black tracking-tight text-slate-900">
+                      {simulationActive ? simParams.temperature_c : weatherReport.current.temp}°C
+                    </span>
+                    <span className="text-xs font-semibold text-slate-500">
+                      {simulationActive ? 'Simulated' : `Feels ${weatherReport.current.feels_like}°C`}
+                    </span>
+                  </div>
+                  <span className="text-xs text-slate-700 font-semibold capitalize flex items-center gap-1">
+                    {weatherReport.current.condition === 'Clear' ? (
+                      <Sun className="w-3.5 h-3.5 text-amber-500" />
+                    ) : weatherReport.current.condition.toLowerCase().includes('rain') ? (
+                      <CloudRain className="w-3.5 h-3.5 text-blue-500" />
+                    ) : (
+                      <Cloud className="w-3.5 h-3.5 text-slate-400" />
+                    )}
+                    {weatherReport.current.description}
+                  </span>
+                </div>
+
+                <div className="text-[11px] text-slate-500 flex items-center gap-2">
+                  <span>Humidity: <strong className="text-slate-800">{simulationActive ? (simParams.rain_intensity_mm > 0 ? 92 : 25) : weatherReport.current.humidity}%</strong></span>
+                  <span className="text-slate-300">•</span>
+                  <span>Wind: <strong className="text-slate-800">{simulationActive ? simParams.wind_speed_kmh : weatherReport.current.wind_speed} km/h</strong></span>
+                </div>
+
+                {/* 6 Sensor Metric Cards */}
+                <div className="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-100">
+                  <div className="p-1.5 rounded-xl bg-slate-50 text-center">
+                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Wind</span>
+                    <span className="text-[11px] font-extrabold text-slate-800">
+                      {simulationActive ? simParams.wind_speed_kmh : weatherReport.current.wind_speed} km/h
+                    </span>
+                  </div>
+                  <div className="p-1.5 rounded-xl bg-slate-50 text-center">
+                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Rain Vol</span>
+                    <span className="text-[11px] font-extrabold text-slate-800">
+                      {simulationActive ? simParams.rain_intensity_mm : weatherReport.current.rain_1h} mm/h
+                    </span>
+                  </div>
+                  <div className="p-1.5 rounded-xl bg-slate-50 text-center">
+                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Clouds</span>
+                    <span className="text-[11px] font-extrabold text-slate-800">
+                      {simulationActive ? (simParams.rain_intensity_mm > 0 ? 100 : 15) : weatherReport.current.clouds}%
+                    </span>
+                  </div>
+                  <div className="p-1.5 rounded-xl bg-slate-50 text-center">
+                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Min / Max</span>
+                    <span className="text-[11px] font-extrabold text-slate-800">
+                      {simulationActive ? `${simParams.temperature_c - 4}° / ${simParams.temperature_c + 3}°` : `${weatherReport.current.temp_min}° / ${weatherReport.current.temp_max}°`}
+                    </span>
+                  </div>
+                  <div className="p-1.5 rounded-xl bg-slate-50 text-center">
+                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Pressure</span>
+                    <span className="text-[11px] font-extrabold text-slate-800">
+                      {weatherReport.current.pressure} hPa
+                    </span>
+                  </div>
+                  <div className="p-1.5 rounded-xl bg-slate-50 text-center">
+                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Visibility</span>
+                    <span className="text-[11px] font-extrabold text-slate-800">
+                      {simulationActive && simParams.rain_intensity_mm > 30 ? '1.5 km' : `${(weatherReport.current.visibility / 1000).toFixed(1)} km`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 3. List of Impacted Entities (dynamically backed by simulation results) */}
+            <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
               {simulationResult.impacted_entities.map((simEntity, idx) => {
                 const isSelected = highlightedItemId === simEntity.itemId;
                 const isSevere = simEntity.simulatedRisk === 'severe';
@@ -1183,9 +1167,9 @@ export default function WeatherDigitalTwinPage() {
                     onClick={() => setHighlightedItemId(simEntity.itemId)}
                     className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-rose-50/70 border-rose-400 shadow-md ring-2 ring-rose-200'
+                        ? 'bg-blue-50/70 border-blue-400 shadow-md ring-2 ring-blue-200'
                         : isSevere
-                        ? 'bg-rose-50/40 border-rose-200 hover:border-rose-300'
+                        ? 'bg-blue-50/40 border-red-200 hover:border-blue-300'
                         : isModerate
                         ? 'bg-amber-50/30 border-amber-200 hover:border-amber-300'
                         : 'bg-white border-slate-200/80 hover:border-slate-300 hover:shadow-xs'
@@ -1197,7 +1181,7 @@ export default function WeatherDigitalTwinPage() {
                       </span>
                       <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
                         isSevere
-                          ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                          ? 'bg-red-100 text-red-800 border border-blue-300'
                           : isModerate
                           ? 'bg-amber-100 text-amber-800 border border-amber-300'
                           : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
@@ -1230,333 +1214,9 @@ export default function WeatherDigitalTwinPage() {
         </div>
       </motion.div>
 
-      {/* ── REQUIREMENT 3: REAL-WORLD SOCIAL SIGNAL INTEGRATION & TRAVELER SENTIMENT ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15 }}
-        className="p-7 rounded-[2rem] bg-white border border-slate-200/90 shadow-lg space-y-6"
-      >
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-amber-50 text-amber-600 border border-amber-200/60 shadow-2xs">
-                <MessageSquare className="w-4 h-4" />
-              </span>
-              <div>
-                <h2 className="text-lg font-black text-slate-900 tracking-tight">
-                  Real-World Social Signals & Community Sentiment Ingestion
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Live traveler reactions from X/Twitter, Instagram, Reddit, and field crowd reports corroborating satellite weather and flagging ground anomalies.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setShowSubmitModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white shadow-sm hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
-            style={{ backgroundColor: COLORS.burgundy }}
-          >
-            <Plus className="w-4 h-4" />
-            <span>Report Ground Condition</span>
-          </button>
-        </div>
-
-        {/* Sentiment Diagnostics KPI Grid */}
-        {sentimentSummary && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
-            {/* Overall Sentiment Card */}
-            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold text-slate-500">
-                <span>TRAVELER SENTIMENT</span>
-                <span className="text-emerald-700 font-extrabold uppercase">{sentimentSummary.overall_sentiment}</span>
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-black text-slate-900">{sentimentSummary.sentiment_score}%</span>
-                <span className="text-xs text-slate-500">Confidence Score</span>
-              </div>
-              {/* Mini Sentiment Bar */}
-              <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden flex">
-                <div style={{ width: `${sentimentSummary.positive_pct}%` }} className="bg-emerald-500 h-full" title={`Positive: ${sentimentSummary.positive_pct}%`} />
-                <div style={{ width: `${sentimentSummary.neutral_pct}%` }} className="bg-amber-400 h-full" title={`Neutral: ${sentimentSummary.neutral_pct}%`} />
-                <div style={{ width: `${sentimentSummary.caution_pct}%` }} className="bg-rose-500 h-full" title={`Caution: ${sentimentSummary.caution_pct}%`} />
-              </div>
-              <div className="flex items-center justify-between text-[10px] text-slate-400 font-semibold pt-1">
-                <span>{sentimentSummary.positive_pct}% Optimistic</span>
-                <span>{sentimentSummary.caution_pct}% Alerted</span>
-              </div>
-            </div>
-
-            {/* Weather Corroboration Card */}
-            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold text-slate-500">
-                <span>WEATHER CORROBORATION</span>
-                <span className="text-indigo-600 font-extrabold capitalize">{sentimentSummary.weather_corroboration} Match</span>
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-black text-slate-900">94%</span>
-                <span className="text-xs text-slate-500">Ground Truth Index</span>
-              </div>
-              <p className="text-[11px] text-slate-600 leading-tight">
-                {sentimentSummary.corroboration_note}
-              </p>
-            </div>
-
-            {/* Anomaly Alerts Ingested */}
-            <div className={`p-5 rounded-2xl border space-y-2 ${
-              sentimentSummary.anomaly_alerts > 0
-                ? 'bg-rose-50/70 border-rose-300'
-                : 'bg-slate-50 border-slate-200/80'
-            }`}>
-              <div className="flex items-center justify-between text-xs font-bold text-slate-500">
-                <span>GROUND ANOMALIES</span>
-                {sentimentSummary.anomaly_alerts > 0 ? (
-                  <span className="text-rose-600 font-extrabold flex items-center gap-1">
-                    <AlertTriangle className="w-3.5 h-3.5" /> Active Flag
-                  </span>
-                ) : (
-                  <span className="text-emerald-600 font-extrabold">None</span>
-                )}
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-black text-slate-900">{sentimentSummary.anomaly_alerts}</span>
-                <span className="text-xs text-slate-500">Discrepancies Detected</span>
-              </div>
-              <p className="text-[11px] text-slate-600 leading-tight">
-                {sentimentSummary.anomaly_alerts > 0
-                  ? 'Local pass slush detected despite satellite clear-sky report. Digital twin adjusted.'
-                  : 'Real-world ground observations match atmospheric forecast models.'}
-              </p>
-            </div>
-
-            {/* Trending Ground Topics */}
-            <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold text-slate-500">
-                <span>COMMUNITY TOPICS</span>
-                <span className="text-sky-600 font-extrabold">Trending</span>
-              </div>
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {sentimentSummary.trending_topics.map(tag => (
-                  <span key={tag} className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-[11px] font-bold text-slate-700 shadow-2xs">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <span className="text-[10px] text-slate-400 block pt-1">Ingested from real travelers & operators</span>
-            </div>
-
-          </div>
-        )}
-
-        {/* Filter Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-          <div className="flex items-center gap-1.5">
-            {[
-              { key: 'all', label: `All Signals (${socialSignals.length})` },
-              { key: 'caution', label: '⚠️ Road & Weather Alerts' },
-              { key: 'positive', label: '☀️ Clear Conditions' },
-              { key: 'anomaly', label: '🚨 Ground Anomalies' },
-            ].map(tab => (
-              <button
-                key={tab.key}
-                type="button"
-                onClick={() => setSignalFilter(tab.key as any)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-                  signalFilter === tab.key
-                    ? 'bg-slate-900 text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          <span className="text-xs text-slate-400 font-medium">
-            Showing {filteredSignals.length} of {socialSignals.length} verified ground signals
-          </span>
-        </div>
-
-        {/* Feed Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredSignals.map(signal => {
-            const isCaution = signal.sentiment === 'caution' || signal.sentiment === 'warning';
-            const isPositive = signal.sentiment === 'positive';
-
-            return (
-              <div
-                key={signal.id}
-                className="p-5 rounded-2xl bg-white border border-slate-200/90 hover:border-slate-300 shadow-2xs hover:shadow-md transition flex flex-col justify-between space-y-4"
-              >
-                <div className="space-y-3">
-                  {/* Platform & Sentiment Header */}
-                  <div className="flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
-                      <span className="w-2 h-2 rounded-full bg-sky-500" />
-                      <span>{signal.platform_name}</span>
-                      <span className="text-slate-300">•</span>
-                      <span>{signal.timestamp}</span>
-                    </span>
-
-                    <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
-                      isCaution 
-                        ? 'bg-amber-100 text-amber-800 border border-amber-300' 
-                        : isPositive
-                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                        : 'bg-slate-100 text-slate-700 border border-slate-200'
-                    }`}>
-                      {signal.sentiment.toUpperCase()}
-                    </span>
-                  </div>
-
-                  {/* Author Header */}
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={signal.author.avatar}
-                      alt={signal.author.name}
-                      className="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-2xs"
-                      onError={(e: any) => {
-                        e.target.src = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80';
-                      }}
-                    />
-                    <div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs font-bold text-slate-900">{signal.author.name}</span>
-                        {signal.author.verified && (
-                          <span className="w-3.5 h-3.5 rounded-full bg-sky-500 text-white text-[9px] font-bold flex items-center justify-center">✓</span>
-                        )}
-                      </div>
-                      <span className="text-[10px] text-slate-400 block">{signal.author.handle} • {signal.author.role}</span>
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <p className="text-xs text-slate-700 leading-relaxed font-normal">
-                    &ldquo;{signal.content}&rdquo;
-                  </p>
-
-                  {/* Ground Anomaly Alert Banner */}
-                  {signal.anomaly_detected && (
-                    <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-[11px] space-y-1">
-                      <div className="font-extrabold flex items-center gap-1">
-                        <AlertTriangle className="w-3 h-3 text-rose-600" />
-                        <span>Ground Truth Anomaly</span>
-                      </div>
-                      <p className="text-[10px] text-rose-700 leading-tight">
-                        {signal.anomaly_description}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1">
-                    {signal.tags.map(tag => (
-                      <span key={tag} className="text-[10px] font-semibold text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Footer Actions: Location + Corroborate Button */}
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-slate-500 text-[11px] font-medium flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-slate-400" />
-                    <span className="truncate max-w-[120px]">{signal.location_name}</span>
-                  </span>
-
-                  <button
-                    type="button"
-                    onClick={() => handleCorroborate(signal.id)}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition shadow-2xs"
-                    title="Corroborate this traveler observation"
-                  >
-                    <ThumbsUp className="w-3 h-3 text-indigo-600" />
-                    <span>{signal.metrics.corroborations}</span>
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </motion.div>
-
-      {/* ── ATMOSPHERIC SENSOR TELEMETRY & DIGITAL TWIN MATRIX ── */}
+      {/* ── AI DIGITAL TWIN ECOSYSTEM IMPACT ASSESSMENT & DOMAIN CASCADE ── */}
       {weatherReport && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          
-          {/* Main Sensor Gauge Card */}
-          <div className="lg:col-span-5 flex flex-col justify-between p-7 rounded-[2rem] bg-white border border-slate-200/80 shadow-lg space-y-6">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Atmospheric Telemetry</span>
-                <span className="text-xs font-bold text-slate-500">
-                  {simulationActive ? '⚡ Counterfactual Mode' : 'OpenWeather Feed'}
-                </span>
-              </div>
-
-              <div className="flex items-baseline gap-3 mt-3">
-                <span className="text-5xl font-black tracking-tight text-slate-900">
-                  {simulationActive ? simParams.temperature_c : weatherReport.current.temp}°C
-                </span>
-                <span className="text-sm font-semibold text-slate-500">
-                  {simulationActive ? `Simulated condition` : `Feels like ${weatherReport.current.feels_like}°C`}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2 mt-2 text-slate-700 font-semibold text-sm">
-                <span className="capitalize">{simulationActive && simParams.rain_intensity_mm > 30 ? 'Heavy Rain / Cloudburst' : simulationActive && simParams.temperature_c < 0 ? 'Snow Blizzard' : weatherReport.current.description}</span>
-                <span className="text-slate-300">•</span>
-                <span className="text-xs text-slate-500">Humidity: {simulationActive ? (simParams.rain_intensity_mm > 0 ? 92 : 25) : weatherReport.current.humidity}%</span>
-              </div>
-            </div>
-
-            {/* 6 Sensor Metric Cards */}
-            <div className="grid grid-cols-3 gap-2.5 pt-2">
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 text-center space-y-1">
-                <Wind className="w-4 h-4 text-sky-600 mx-auto" />
-                <span className="text-[10px] font-bold text-slate-400 block uppercase">Wind Speed</span>
-                <span className="text-xs font-extrabold text-slate-800">{simulationActive ? simParams.wind_speed_kmh : weatherReport.current.wind_speed} km/h</span>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 text-center space-y-1">
-                <Droplets className="w-4 h-4 text-blue-600 mx-auto" />
-                <span className="text-[10px] font-bold text-slate-400 block uppercase">Rain Vol</span>
-                <span className="text-xs font-extrabold text-slate-800">{simulationActive ? simParams.rain_intensity_mm : weatherReport.current.rain_1h} mm/h</span>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 text-center space-y-1">
-                <Cloud className="w-4 h-4 text-indigo-600 mx-auto" />
-                <span className="text-[10px] font-bold text-slate-400 block uppercase">Clouds</span>
-                <span className="text-xs font-extrabold text-slate-800">{simulationActive ? (simParams.rain_intensity_mm > 0 ? 100 : 15) : weatherReport.current.clouds}%</span>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 text-center space-y-1">
-                <Thermometer className="w-4 h-4 text-amber-600 mx-auto" />
-                <span className="text-[10px] font-bold text-slate-400 block uppercase">Min / Max</span>
-                <span className="text-xs font-extrabold text-slate-800">{simulationActive ? `${simParams.temperature_c - 4}° / ${simParams.temperature_c + 3}°` : `${weatherReport.current.temp_min}° / ${weatherReport.current.temp_max}°`}</span>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 text-center space-y-1">
-                <Compass className="w-4 h-4 text-emerald-600 mx-auto" />
-                <span className="text-[10px] font-bold text-slate-400 block uppercase">Pressure</span>
-                <span className="text-xs font-extrabold text-slate-800">{weatherReport.current.pressure} hPa</span>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-100 text-center space-y-1">
-                <Sun className="w-4 h-4 text-orange-500 mx-auto" />
-                <span className="text-[10px] font-bold text-slate-400 block uppercase">Visibility</span>
-                <span className="text-xs font-extrabold text-slate-800">{simulationActive && simParams.rain_intensity_mm > 30 ? '1.5 km' : `${(weatherReport.current.visibility / 1000).toFixed(1)} km`}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* AI Digital Twin Impact Assessment & Domain Cascading Ripple Effects */}
-          <div className="lg:col-span-7 flex flex-col justify-between p-7 rounded-[2rem] bg-gradient-to-br from-indigo-900 via-slate-900 to-slate-950 text-white shadow-xl space-y-6">
+        <div className="p-7 rounded-[2rem] bg-gradient-to-br from-indigo-900 via-slate-900 to-slate-950 text-white shadow-xl space-y-6">
             
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -1567,7 +1227,7 @@ export default function WeatherDigitalTwinPage() {
                 
                 <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold ${
                   (simulationActive ? simulationResult.ecosystem_risk_level : weatherReport.impact_assessment.risk_level) === 'severe'
-                    ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                    ? 'bg-blue-500/10 text-blue-300 border border-blue-500/40'
                     : (simulationActive ? simulationResult.ecosystem_risk_level : weatherReport.impact_assessment.risk_level) === 'high'
                     ? 'bg-orange-500/20 text-orange-300 border border-orange-500/40'
                     : (simulationActive ? simulationResult.ecosystem_risk_level : weatherReport.impact_assessment.risk_level) === 'moderate'
@@ -1654,7 +1314,6 @@ export default function WeatherDigitalTwinPage() {
               </div>
             </div>
           </div>
-        </div>
       )}
 
       {/* ── 5-DAY DETAILED METEOROLOGICAL FORECAST ── */}
@@ -1719,120 +1378,6 @@ export default function WeatherDigitalTwinPage() {
         </div>
       )}
 
-      {/* ── COMMUNITY OBSERVATION SUBMISSION MODAL ── */}
-      <AnimatePresence>
-        {showSubmitModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="bg-white rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-7 max-w-lg w-full space-y-5"
-            >
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <span className="p-2 rounded-xl bg-amber-50 text-amber-600">
-                    <MessageSquare className="w-4 h-4" />
-                  </span>
-                  <div>
-                    <h3 className="text-base font-bold text-slate-900">Submit Ground Observation</h3>
-                    <p className="text-xs text-slate-500">Feed verified field truth into the Digital Twin</p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setShowSubmitModal(false)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmitCommunityReport} className="space-y-4">
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">
-                    Location / Stop Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Khardung La Pass, Shanti Stupa, Main Bazaar"
-                    value={formLocation}
-                    onChange={e => setFormLocation(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">
-                    Observation & Road Condition
-                  </label>
-                  <textarea
-                    required
-                    rows={3}
-                    placeholder="Describe actual ground weather, pass passability, road slush, crowd queue, or wind chill..."
-                    value={formContent}
-                    onChange={e => setFormContent(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs font-bold text-slate-700 block mb-1">
-                      Report Severity / Sentiment
-                    </label>
-                    <select
-                      value={formSentiment}
-                      onChange={e => setFormSentiment(e.target.value as any)}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    >
-                      <option value="positive">🟢 Optimal / Clear</option>
-                      <option value="neutral">⚪ Neutral / Normal</option>
-                      <option value="caution">🟡 Caution (+15m Buffer)</option>
-                      <option value="warning">🔴 Severe Disruption</option>
-                    </select>
-                  </div>
-
-                  <div className="flex items-center pt-5">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formAnomaly}
-                        onChange={e => setFormAnomaly(e.target.checked)}
-                        className="rounded text-rose-600 focus:ring-rose-500 h-4 w-4"
-                      />
-                      <span className="text-xs font-bold text-slate-700">Flag as Weather Anomaly</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setShowSubmitModal(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition"
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    type="submit"
-                    disabled={submittingReport || !formContent.trim()}
-                    className="inline-flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs font-bold text-white shadow-md transition disabled:opacity-50"
-                    style={{ backgroundColor: COLORS.burgundy }}
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                    <span>{submittingReport ? 'Submitting...' : 'Publish Observation'}</span>
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-    </div>
+      </div>
   );
 }

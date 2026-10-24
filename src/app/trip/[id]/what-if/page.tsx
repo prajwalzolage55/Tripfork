@@ -413,15 +413,15 @@ export default function WhatIfPage() {
       </div>
 
       {/* ─── Weather Twin What-If Simulation Studio Banner ─── */}
-      <div className="rounded-2xl p-5 bg-gradient-to-r from-rose-950/60 via-amber-950/40 to-slate-900 border border-rose-500/30 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="rounded-2xl p-5 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-blue-500/30 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 shrink-0">
+          <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/30 shrink-0">
             <Sparkles size={20} />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-extrabold text-white">Weather-Driven Digital Twin Simulation Studio</h2>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white">LIVE AI</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-600 text-white">LIVE AI</span>
             </div>
             <p className="text-xs text-slate-300 mt-0.5 leading-relaxed">
               Simulate counterfactual micro-climates (blizzards, cloudbursts, extreme heat), mountain pass closures, transit delays, and cascading schedule viability adjustments.
@@ -431,7 +431,7 @@ export default function WhatIfPage() {
 
         <Link
           href={`/trip/${tripId}/weather`}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-md transition shrink-0"
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md transition shrink-0"
         >
           <span>Launch Weather Simulator</span>
           <ArrowRight size={13} />
@@ -812,7 +812,7 @@ export default function WhatIfPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Question 1: Exactly Who Pays More? */}
             <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-3">
-              <div className="flex items-center gap-2 text-rose-700 font-bold text-sm">
+              <div className="flex items-center gap-2 text-red-700 font-bold text-sm">
                 <TrendingUp size={16} />
                 <span>Exactly Who Pays More?</span>
               </div>
@@ -821,13 +821,13 @@ export default function WhatIfPage() {
                   {activeScenario.whoPaysMore.map((p, idx) => (
                     <div
                       key={idx}
-                      className="p-3 rounded-xl bg-rose-50/60 border border-rose-100 flex items-center justify-between gap-3 text-xs"
+                      className="p-3 rounded-xl bg-red-50/60 border border-red-100 flex items-center justify-between gap-3 text-xs"
                     >
                       <div>
                         <strong className="text-slate-900 block">{p.memberName}</strong>
                         <span className="text-[11px] text-slate-600">{p.reason}</span>
                       </div>
-                      <span className="font-mono font-bold text-rose-700 shrink-0">
+                      <span className="font-mono font-bold text-red-700 shrink-0">
                         +{formatCurrency(p.delta)}
                       </span>
                     </div>
@@ -883,7 +883,7 @@ export default function WhatIfPage() {
                       key={idx}
                       className={`p-3 rounded-xl border text-xs ${
                         b.severity === 'critical'
-                          ? 'bg-rose-50 border-rose-200 text-rose-900'
+                          ? 'bg-red-50 border-red-200 text-red-900'
                           : 'bg-amber-50 border-amber-200 text-amber-900'
                       }`}
                     >
@@ -1003,7 +1003,7 @@ export default function WhatIfPage() {
                       </td>
                       <td className="py-3 text-right font-mono font-bold">
                         {delta > 0 ? (
-                          <span className="text-rose-600">+{formatCurrency(delta)}</span>
+                          <span className="text-red-600">+{formatCurrency(delta)}</span>
                         ) : delta < 0 ? (
                           <span className="text-emerald-600">{formatCurrency(delta)}</span>
                         ) : (
@@ -1012,7 +1012,7 @@ export default function WhatIfPage() {
                       </td>
                       <td className="py-3 text-center">
                         {delta > 0 ? (
-                          <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 font-semibold border border-rose-200">
+                          <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-semibold border border-red-200">
                             <TrendingUp size={11} /> Pays More
                           </span>
                         ) : delta < 0 ? (

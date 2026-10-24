@@ -847,7 +847,7 @@ export default function FairnessConstitutionPage() {
                     </div>
                     <div>
                       <span className="text-indigo-400 text-[11px] block">Governing Rule Status</span>
-                      <span className={`font-semibold ${simulationResult.rule.isEnabled ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      <span className={`font-semibold ${simulationResult.rule.isEnabled ? 'text-emerald-400' : 'text-blue-500'}`}>
                         {simulationResult.rule.isEnabled ? '✓ Enforced in Constitution' : '⚠ Rule is currently disabled'}
                       </span>
                     </div>

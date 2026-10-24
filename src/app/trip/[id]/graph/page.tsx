@@ -44,14 +44,15 @@ import {
 } from 'lucide-react';
 
 const COLORS = {
-  burgundy: '#791523',
-  cream: '#eadecd',
-  offWhite: '#fdfbfa',
-  rose: '#b83a4b',
-  rosePale: '#f8e8ea',
-  burgundyLight: '#9a2a3a',
-  burgundyPale: '#f5e6e9',
-  creamDark: '#c9b89e',
+  burgundy: '#0f172a',
+  burgundyLight: '#1e293b',
+  burgundyPale: '#f1f5f9',
+  cream: '#f8fafc',
+  creamDark: '#e2e8f0',
+  offWhite: '#ffffff',
+  rose: '#2563eb',
+  rosePale: '#eff6ff',
+  deepWine: '#0f172a',
 };
 
 const NODE_CONFIGS: Record<FinancialNodeType, { icon: typeof Users; label: string; color: string; bg: string; border: string; dot: string }> = {
