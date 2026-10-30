@@ -981,12 +981,15 @@ export default function SmsReaderPage() {
       {/* ── Add to Trip Expenses Modal / Sheet ─────────────────────── */}
       <AnimatePresence>
         {selectedTxForExpense && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs" data-lenis-prevent="true">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl overflow-hidden border"
+              role="dialog"
+              aria-modal="true"
+              data-lenis-prevent="true"
+              className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl overflow-y-auto max-h-[90vh] overscroll-contain border"
               style={{ borderColor: 'rgba(44,24,16,0.1)' }}
             >
               <div className="flex items-center justify-between mb-4">

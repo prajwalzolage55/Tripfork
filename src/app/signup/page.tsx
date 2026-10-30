@@ -8,7 +8,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { useAuth } from '@/components/AuthProvider';
 import { Plane, Mail, Lock, User, Phone, ArrowRight, Loader2, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
-import { ReactLenis } from 'lenis/react';
+
 import Link from 'next/link';
 
 const COLORS = {
@@ -101,7 +101,7 @@ export default function SignupPage() {
   };
 
   return (
-    <ReactLenis root>
+    <>
       <main className="min-h-screen flex font-['Inter']" style={{ backgroundColor: COLORS.offWhite, color: COLORS.burgundy }}>
         
         {/* Left Side: Split Image */}
@@ -320,6 +320,6 @@ export default function SignupPage() {
         </div>
         
       </main>
-    </ReactLenis>
+    </>
   );
 }

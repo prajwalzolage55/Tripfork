@@ -1,6 +1,7 @@
 import { db } from './firebase';
-import { collection, doc, getDoc, getDocs, query, where, setDoc, addDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where, setDoc, deleteDoc } from 'firebase/firestore';
 import { buildDeterministicItinerary, Location, TripPreferences } from './itinerary-engine';
+import { suggestPlacesWithGemini, generateItineraryFromPlacesWithGemini, ItineraryDayPlan } from './gemini';
 
 const ALIBAG_LOCATIONS: Location[] = [
   { id: 'a1111111-1111-1111-1111-111111111111', name: 'Alibag Beach & Promenade', category: 'attraction', latitude: 18.6414, longitude: 72.8722, recommendedDurationMinutes: 120, entryFee: 0, estimatedSpending: 10, openingHours: { open: "06:00", close: "20:00" } },
@@ -21,6 +22,84 @@ const DEFAULT_LOCATIONS: Location[] = [
   { id: '66666666-6666-6666-6666-666666666666', name: 'Sunset Cruise', category: 'activity', latitude: 15.51, longitude: 73.75, recommendedDurationMinutes: 90, entryFee: 30, estimatedSpending: 15, openingHours: { open: "16:00", close: "19:00" } }
 ];
 
+/**
+ * Save an AI-generated ItineraryDayPlan[] into Firestore
+ */
+export async function saveItineraryPlanToFirestore(tripId: string, daysPlan: ItineraryDayPlan[]) {
+  // 1. Clear existing itinerary items and days for this trip
+  const oldItems = await getDocs(query(collection(db, 'itinerary_items'), where('trip_id', '==', tripId)));
+  for (const item of oldItems.docs) {
+    await deleteDoc(item.ref);
+  }
+  
+  const oldDays = await getDocs(query(collection(db, 'itinerary_days'), where('trip_id', '==', tripId)));
+  for (const day of oldDays.docs) {
+    await deleteDoc(day.ref);
+  }
+
+  // 2. Insert new days and items
+  for (const day of daysPlan) {
+    const dayRef = doc(collection(db, 'itinerary_days'));
+    await setDoc(dayRef, {
+      id: dayRef.id,
+      trip_id: tripId,
+      day_date: day.date,
+      day_index: day.dayIndex,
+      title: day.title || `Day ${day.dayIndex}`
+    });
+
+    const itemsToInsert = day.items.map(async (item) => {
+      let locId: string | null = null;
+
+      // Save location if coordinates or locationName are provided
+      if (item.latitude && item.longitude) {
+        const locRef = doc(collection(db, 'locations'));
+        locId = locRef.id;
+        await setDoc(locRef, {
+          id: locId,
+          name: item.locationName || item.label,
+          category: item.type === 'dining' ? 'restaurant' : 'attraction',
+          latitude: item.latitude,
+          longitude: item.longitude,
+          recommended_duration: item.estimatedTravelTime || '90 minutes',
+          entry_fee: 0,
+          estimated_spending: item.cost || 0,
+        }, { merge: true });
+      }
+
+      // Format ISO start and end times
+      const datePart = day.date || new Date().toISOString().split('T')[0];
+      const startTz = item.startTime.includes('T') ? item.startTime : `${datePart}T${item.startTime.padStart(5, '0')}:00.000Z`;
+      const endTz = item.endTime.includes('T') ? item.endTime : `${datePart}T${item.endTime.padStart(5, '0')}:00.000Z`;
+
+      const itemRef = doc(collection(db, 'itinerary_items'));
+      return setDoc(itemRef, {
+        id: itemRef.id,
+        trip_id: tripId,
+        itinerary_day_id: dayRef.id,
+        location_id: locId,
+        type: item.type || 'activity',
+        label: item.label,
+        start_time: startTz,
+        end_time: endTz,
+        cost: item.cost || 0,
+        default_split_type: 'equal',
+        status: 'active',
+        short_description: item.description || '',
+        estimated_travel_time: item.estimatedTravelTime || '~15 minutes',
+        travel_distance_km: item.travelDistanceKm || 5,
+        conflicts: []
+      });
+    });
+
+    if (itemsToInsert.length > 0) {
+      await Promise.all(itemsToInsert);
+    }
+  }
+
+  return true;
+}
+
 export async function generateTripItinerary(tripId: string) {
   // 1. Fetch Trip & Preferences
   const tripDoc = await getDoc(doc(db, 'trips', tripId));
@@ -31,6 +110,39 @@ export async function generateTripItinerary(tripId: string) {
   const prefsDocs = await getDocs(prefsQ);
   const prefs = prefsDocs.empty ? null : prefsDocs.docs[0].data();
 
+  // Try generating with Gemini first
+  try {
+    const destination = trip.destination || trip.name || 'Goa';
+    const places = await suggestPlacesWithGemini({
+      destination,
+      travelStyle: prefs?.travel_style || 'Balanced',
+      interests: prefs?.interests || [],
+      budget: prefs?.total_budget,
+      transport: prefs?.transport_preferences,
+      food: Array.isArray(prefs?.food_preferences) ? prefs.food_preferences.join(', ') : prefs?.food_preferences,
+      specialRequirements: prefs?.special_requirements,
+      count: 10,
+    });
+
+    if (places && places.length > 0) {
+      const daysPlan = await generateItineraryFromPlacesWithGemini({
+        destination,
+        startDate: trip.start_date,
+        endDate: trip.end_date,
+        acceptedPlaces: places,
+        travelStyle: prefs?.travel_style || 'Balanced',
+      });
+
+      if (daysPlan && daysPlan.length > 0) {
+        await saveItineraryPlanToFirestore(tripId, daysPlan);
+        return true;
+      }
+    }
+  } catch (geminiError) {
+    console.warn('Gemini generation failed, falling back to deterministic engine:', geminiError);
+  }
+
+  // Fallback to deterministic engine
   const preferences: TripPreferences = {
     totalBudget: prefs?.total_budget || null,
     travelStyle: prefs?.travel_style || 'Balanced',
@@ -40,7 +152,6 @@ export async function generateTripItinerary(tripId: string) {
     accommodationPreference: prefs?.accommodation_preference || 'Hotel'
   };
 
-  // 2. Select Location pool based on Destination
   const destLower = (trip.destination || trip.name || '').toLowerCase();
   let locationPool: Location[] = [];
 
@@ -50,7 +161,6 @@ export async function generateTripItinerary(tripId: string) {
     locationPool = [...DEFAULT_LOCATIONS];
   }
 
-  // Save locations to DB to act as the cache
   for (const loc of locationPool) {
     await setDoc(doc(db, 'locations', loc.id), {
       id: loc.id,
@@ -65,7 +175,6 @@ export async function generateTripItinerary(tripId: string) {
     }, { merge: true });
   }
 
-  // 3. Clear existing itinerary items and days for this trip so regeneration doesn't collide
   const oldItems = await getDocs(query(collection(db, 'itinerary_items'), where('trip_id', '==', tripId)));
   for (const item of oldItems.docs) {
     await deleteDoc(item.ref);
@@ -76,10 +185,8 @@ export async function generateTripItinerary(tripId: string) {
     await deleteDoc(day.ref);
   }
 
-  // 4. Build Deterministic Itinerary
   const days = buildDeterministicItinerary(preferences, locationPool);
 
-  // 5. Save to DB
   for (const day of days) {
     const dayRef = doc(collection(db, 'itinerary_days'));
     await setDoc(dayRef, {

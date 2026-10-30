@@ -56,7 +56,7 @@ export default function PermissionModal() {
   if (!isOpen) return null;
 
   return (
-    <div className="permission-overlay">
+    <div className="permission-overlay" data-lenis-prevent="true">
       <style>{`
         .permission-overlay {
           position: fixed;
@@ -79,11 +79,13 @@ export default function PermissionModal() {
         .permission-card {
           width: 100%;
           max-width: 480px;
+          max-height: 90vh;
+          overflow-y: auto;
+          overscroll-behavior: contain;
           border-radius: 1.5rem;
           background: var(--color-surface-0, #ffffff);
           border: 1px solid var(--color-glass-border, rgba(226, 232, 240, 0.8));
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-          overflow: hidden;
           position: relative;
         }
 
@@ -267,7 +269,7 @@ export default function PermissionModal() {
         .spin { animation: spin 0.8s linear infinite; }
       `}</style>
 
-      <div className="permission-card animate-in">
+      <div className="permission-card animate-in" role="dialog" aria-modal="true" data-lenis-prevent="true">
         <div className="permission-header">
           <button className="permission-close-btn" onClick={handleDismiss} title="Close">
             <X size={16} />

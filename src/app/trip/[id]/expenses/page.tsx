@@ -363,7 +363,7 @@ export default function ExpensesPage() {
       {/* Modal Form */}
       <AnimatePresence>
         {showForm && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" data-lenis-prevent="true">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0 bg-black/40 backdrop-blur-sm"
@@ -371,7 +371,10 @@ export default function ExpensesPage() {
             />
             <motion.div 
               variants={modalVariants} initial="hidden" animate="visible" exit="exit"
-              className="relative w-full max-w-lg p-8 rounded-[2rem] shadow-2xl bg-white border max-h-[90vh] overflow-y-auto"
+              className="relative w-full max-w-lg p-8 rounded-[2rem] shadow-2xl bg-white border max-h-[90vh] overflow-y-auto overscroll-contain"
+              role="dialog"
+              aria-modal="true"
+              data-lenis-prevent="true"
               style={{ borderColor: COLORS.cream }}
             >
               <h2 className="text-3xl font-black mb-6" style={{ color: COLORS.burgundy }}>Add Expense</h2>

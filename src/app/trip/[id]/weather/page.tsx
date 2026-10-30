@@ -619,8 +619,8 @@ export default function WeatherDigitalTwinPage() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-50 text-indigo-700 border border-indigo-200/80 shadow-2xs">
-                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                 Weather-Driven Digital Twin
               </span>
 
@@ -633,7 +633,7 @@ export default function WeatherDigitalTwinPage() {
 
               {simulationActive ? (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-blue-600 text-white shadow-md animate-pulse">
-                  <Zap className="w-3.5 h-3.5 text-yellow-300" />
+                  <Zap className="w-3.5 h-3.5 text-amber-300" />
                   What-If Counterfactual Mode Active
                 </span>
               ) : (
@@ -655,7 +655,7 @@ export default function WeatherDigitalTwinPage() {
               </span>
               {weatherReport?.current.coord && (
                 <span className="text-slate-400">
-                  ({weatherReport.current.coord.lat.toFixed(2)}°N, {weatherReport.current.coord.lon.toFixed(2)}°E)
+                  (lat {weatherReport.current.coord.lat.toFixed(2)}°, lon {weatherReport.current.coord.lon.toFixed(2)}°)
                 </span>
               )}
               <span className="text-slate-300">•</span>
@@ -678,8 +678,7 @@ export default function WeatherDigitalTwinPage() {
               type="button"
               onClick={handleSync}
               disabled={syncing}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
-              style={{ backgroundColor: COLORS.burgundy }}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white shadow-xs hover:bg-slate-800 active:scale-95 transition-all cursor-pointer bg-slate-900"
             >
               <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
               <span>{syncing ? 'Syncing Feeds...' : 'Sync Live Weather'}</span>
@@ -692,7 +691,7 @@ export default function WeatherDigitalTwinPage() {
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        className="p-7 rounded-[2rem] bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white border border-indigo-500/30 shadow-2xl space-y-6"
+        className="p-7 rounded-[2rem] bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 text-white border border-slate-800 shadow-2xl space-y-6"
       >
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-white/10">
           <div>
@@ -704,8 +703,8 @@ export default function WeatherDigitalTwinPage() {
                 <h2 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
                   <span>Digital Twin What-If & Counterfactual Scenario Simulator</span>
                   {simulationActive && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-600 text-white">
-                      SIMULATION ACTIVE
+                    <span className="px-2.5 py-1 rounded-full text-xs font-extrabold bg-blue-600 text-white">
+                      Active Simulation
                     </span>
                   )}
                 </h2>
@@ -721,13 +720,13 @@ export default function WeatherDigitalTwinPage() {
               <button
                 type="button"
                 onClick={handleResetLive}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold text-slate-200 bg-white/10 hover:bg-white/20 border border-white/20 transition cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-white/10 hover:bg-white/20 border border-white/20 transition cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset to Live Ground Truth</span>
               </button>
             ) : (
-              <span className="text-xs text-emerald-400 font-bold flex items-center gap-1.5 bg-emerald-950/60 px-3 py-1.5 rounded-xl border border-emerald-500/30">
+              <span className="text-xs text-emerald-400 font-bold flex items-center gap-1.5 bg-emerald-950/60 px-3.5 py-2 rounded-xl border border-emerald-500/30">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>System in Optimal Baseline</span>
               </span>
@@ -737,7 +736,7 @@ export default function WeatherDigitalTwinPage() {
 
         {/* 5 Scenario Presets */}
         <div className="space-y-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <span className="text-xs font-bold text-slate-400">
             Interactive Scenario Presets:
           </span>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
@@ -763,7 +762,7 @@ export default function WeatherDigitalTwinPage() {
                   <div className="text-xs font-extrabold flex items-center gap-1.5 mb-1">
                     <span>{preset.name}</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 line-clamp-1">
+                  <div className="text-xs text-slate-400 line-clamp-1">
                     {PRESET_SCENARIOS[preset.key]?.description || 'Scenario'}
                   </div>
                 </button>
@@ -781,7 +780,7 @@ export default function WeatherDigitalTwinPage() {
               <span className="text-slate-300 flex items-center gap-1">
                 <Droplets className="w-3.5 h-3.5 text-blue-400" /> Rain Intensity
               </span>
-              <span className="text-sky-300 font-mono font-black">{simParams.rain_intensity_mm} mm/h</span>
+              <span className="text-blue-300 font-mono font-black">{simParams.rain_intensity_mm} mm/h</span>
             </div>
             <input
               type="range"
@@ -790,9 +789,9 @@ export default function WeatherDigitalTwinPage() {
               step="5"
               value={simParams.rain_intensity_mm}
               onChange={e => handleSliderChange('rain_intensity_mm', Number(e.target.value))}
-              className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-400"
+              className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
             />
-            <span className="text-[10px] text-slate-400 block">{simParams.rain_intensity_mm > 40 ? 'Severe Torrential Cloudburst' : simParams.rain_intensity_mm > 10 ? 'Moderate Rain' : 'Dry / Clear'}</span>
+            <span className="text-xs text-slate-400 block">{simParams.rain_intensity_mm > 40 ? 'Severe Torrential Cloudburst' : simParams.rain_intensity_mm > 10 ? 'Moderate Rain' : 'Dry / Clear'}</span>
           </div>
 
           {/* Slider 2: Temperature */}
@@ -812,16 +811,16 @@ export default function WeatherDigitalTwinPage() {
               onChange={e => handleSliderChange('temperature_c', Number(e.target.value))}
               className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-400"
             />
-            <span className="text-[10px] text-slate-400 block">{simParams.temperature_c < 0 ? 'Freezing Summit Icing' : simParams.temperature_c > 35 ? 'Extreme Heat Exposure' : 'Temperate Envelope'}</span>
+            <span className="text-xs text-slate-400 block">{simParams.temperature_c < 0 ? 'Freezing Summit Icing' : simParams.temperature_c > 35 ? 'Extreme Heat Exposure' : 'Temperate Envelope'}</span>
           </div>
 
           {/* Slider 3: Wind Velocity */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-bold">
               <span className="text-slate-300 flex items-center gap-1">
-                <Wind className="w-3.5 h-3.5 text-teal-400" /> Wind Velocity
+                <Wind className="w-3.5 h-3.5 text-blue-400" /> Wind Velocity
               </span>
-              <span className="text-teal-300 font-mono font-black">{simParams.wind_speed_kmh} km/h</span>
+              <span className="text-blue-300 font-mono font-black">{simParams.wind_speed_kmh} km/h</span>
             </div>
             <input
               type="range"
@@ -830,18 +829,18 @@ export default function WeatherDigitalTwinPage() {
               step="5"
               value={simParams.wind_speed_kmh}
               onChange={e => handleSliderChange('wind_speed_kmh', Number(e.target.value))}
-              className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-teal-400"
+              className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
             />
-            <span className="text-[10px] text-slate-400 block">{simParams.wind_speed_kmh > 50 ? 'Gale Force High Mountain Gusts' : 'Light Mountain Breeze'}</span>
+            <span className="text-xs text-slate-400 block">{simParams.wind_speed_kmh > 50 ? 'Gale Force High Mountain Gusts' : 'Light Mountain Breeze'}</span>
           </div>
 
           {/* Slider 4: Storm Duration */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-bold">
               <span className="text-slate-300 flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-purple-400" /> Duration
+                <Clock className="w-3.5 h-3.5 text-slate-400" /> Duration
               </span>
-              <span className="text-purple-300 font-mono font-black">{simParams.storm_duration_hours} hours</span>
+              <span className="text-slate-200 font-mono font-black">{simParams.storm_duration_hours} hours</span>
             </div>
             <input
               type="range"
@@ -850,9 +849,9 @@ export default function WeatherDigitalTwinPage() {
               step="1"
               value={simParams.storm_duration_hours}
               onChange={e => handleSliderChange('storm_duration_hours', Number(e.target.value))}
-              className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-purple-400"
+              className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
             />
-            <span className="text-[10px] text-slate-400 block">Accumulated ground exposure window</span>
+            <span className="text-xs text-slate-400 block">Accumulated ground exposure window</span>
           </div>
 
           {/* Slider 5: Propagation Radius */}
@@ -872,7 +871,7 @@ export default function WeatherDigitalTwinPage() {
               onChange={e => handleSliderChange('propagation_radius_km', Number(e.target.value))}
               className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
             />
-            <span className="text-[10px] text-slate-400 block">Simulated storm front coverage</span>
+            <span className="text-xs text-slate-400 block">Simulated storm front coverage</span>
           </div>
 
         </div>
@@ -883,15 +882,15 @@ export default function WeatherDigitalTwinPage() {
           {/* System Viability Score */}
           <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-slate-400">
-              <span>SYSTEM VIABILITY</span>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
+              <span>System Viability</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
                 simulationResult.overall_system_viability_score < 40
                   ? 'bg-blue-500/10 text-blue-300 border border-blue-500/40'
                   : simulationResult.overall_system_viability_score < 70
                   ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                   : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
               }`}>
-                {simulationResult.ecosystem_risk_level.toUpperCase()}
+                {simulationResult.ecosystem_risk_level}
               </span>
             </div>
             <div className="flex items-baseline gap-2">
@@ -911,8 +910,8 @@ export default function WeatherDigitalTwinPage() {
           {/* Transit & Pass Disruption */}
           <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-slate-400">
-              <span>TRANSIT DISRUPTION</span>
-              <span className="text-teal-300 font-extrabold">{simulationResult.transit_disruption_index}/100</span>
+              <span>Transit Disruption</span>
+              <span className="text-blue-300 font-extrabold">{simulationResult.transit_disruption_index}/100</span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-black text-white">
@@ -920,20 +919,20 @@ export default function WeatherDigitalTwinPage() {
               </span>
               <span className="text-xs text-slate-400">Avg Convoy Delay</span>
             </div>
-            <span className="text-[11px] text-slate-300 block">
-              Pass closure probability: <strong>{Math.round(simulationResult.probabilistic_forecast.pass_closure_probability * 100)}%</strong>
+            <span className="text-xs text-slate-300 block">
+              Pass closure probability: <strong className="text-white">{Math.round(simulationResult.probabilistic_forecast.pass_closure_probability * 100)}%</strong>
             </span>
           </div>
 
           {/* Attraction Demand & Dining Surge */}
           <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-slate-400">
-              <span>DEMAND SHIFTS</span>
-              <span className="text-indigo-300 font-extrabold">Ecosystem Flow</span>
+              <span>Demand Shifts</span>
+              <span className="text-slate-300 font-extrabold">Ecosystem Flow</span>
             </div>
             <div className="flex items-center justify-between text-xs pt-1">
               <span className="text-slate-300">Outdoor Sightseeing:</span>
-              <span className="font-extrabold text-blue-500">{simulationResult.attraction_demand_shift}%</span>
+              <span className="font-extrabold text-blue-400">{simulationResult.attraction_demand_shift}%</span>
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-300">Indoor Dining Surge:</span>
@@ -944,14 +943,14 @@ export default function WeatherDigitalTwinPage() {
           {/* Probabilistic Recovery Prediction */}
           <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-slate-400">
-              <span>RECOVERY PREDICTION</span>
-              <span className="text-sky-300 font-extrabold">{Math.round(simulationResult.probabilistic_forecast.delay_propagation_confidence * 100)}% Conf.</span>
+              <span>Recovery Prediction</span>
+              <span className="text-blue-300 font-extrabold">{Math.round(simulationResult.probabilistic_forecast.delay_propagation_confidence * 100)}% Conf.</span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-black text-white">{simulationResult.probabilistic_forecast.estimated_recovery_hours} hrs</span>
               <span className="text-xs text-slate-400">Post-Storm Clearing</span>
             </div>
-            <span className="text-[11px] text-slate-300 block">
+            <span className="text-xs text-slate-300 block">
               Estimated infrastructure reset time
             </span>
           </div>
@@ -960,8 +959,8 @@ export default function WeatherDigitalTwinPage() {
 
         {/* Automated Mitigation Actions Generated by the Simulation */}
         <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3 text-yellow-400" /> Automated Digital Twin Operational Adjustments:
+          <span className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Automated Digital Twin Operational Adjustments:
           </span>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-slate-200">
             {simulationResult.recommended_twin_actions.map((act, i) => (
@@ -1003,13 +1002,13 @@ export default function WeatherDigitalTwinPage() {
 
           <div className="flex items-center gap-2 text-xs">
             {simulationActive ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-red-100 text-red-800 font-extrabold border border-blue-300 animate-pulse">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-red-50 text-red-600 font-extrabold border border-red-200 animate-pulse">
                 <Zap className="w-3.5 h-3.5 text-red-600" />
                 <span>Map Reflecting What-If Parameters</span>
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold border border-slate-200">
-                <Layers className="w-3.5 h-3.5 text-sky-600" />
+                <Layers className="w-3.5 h-3.5 text-blue-600" />
                 <span>OpenWeather Tiles: Active</span>
               </span>
             )}
@@ -1056,7 +1055,7 @@ export default function WeatherDigitalTwinPage() {
                 <span className="text-slate-400">•</span>
                 <span>Click pins for micro-climate diagnostics and active vulnerability status.</span>
               </div>
-              <span className="text-indigo-600 font-bold">
+              <span className="text-blue-600 font-bold">
                 {items.length} Itinerary Entities Monitored
               </span>
             </div>
@@ -1071,7 +1070,7 @@ export default function WeatherDigitalTwinPage() {
                   <Radio className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
                   Twin Vulnerability Index
                 </span>
-                <span className="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-300 border border-blue-500/30">
+                <span className="text-xs font-extrabold px-2.5 py-0.5 rounded-md bg-blue-500/10 text-blue-300 border border-blue-500/30">
                   {simulationActive ? 'Simulated' : 'Live'}
                 </span>
               </div>
@@ -1086,10 +1085,10 @@ export default function WeatherDigitalTwinPage() {
             {weatherReport && (
               <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  <span className="text-xs font-bold text-slate-500">
                     Atmospheric Telemetry
                   </span>
-                  <span className="text-[10px] font-bold text-slate-500">
+                  <span className="text-xs font-bold text-slate-500">
                     {simulationActive ? '⚡ Counterfactual Mode' : 'OpenWeather Feed'}
                   </span>
                 </div>
@@ -1115,7 +1114,7 @@ export default function WeatherDigitalTwinPage() {
                   </span>
                 </div>
 
-                <div className="text-[11px] text-slate-500 flex items-center gap-2">
+                <div className="text-xs text-slate-500 flex items-center gap-2">
                   <span>Humidity: <strong className="text-slate-800">{simulationActive ? (simParams.rain_intensity_mm > 0 ? 92 : 25) : weatherReport.current.humidity}%</strong></span>
                   <span className="text-slate-300">•</span>
                   <span>Wind: <strong className="text-slate-800">{simulationActive ? simParams.wind_speed_kmh : weatherReport.current.wind_speed} km/h</strong></span>
@@ -1124,38 +1123,38 @@ export default function WeatherDigitalTwinPage() {
                 {/* 6 Sensor Metric Cards */}
                 <div className="grid grid-cols-3 gap-1.5 pt-1 border-t border-slate-100">
                   <div className="p-1.5 rounded-xl bg-slate-50 text-center">
-                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Wind</span>
-                    <span className="text-[11px] font-extrabold text-slate-800">
+                    <span className="text-xs font-bold text-slate-400 block uppercase">Wind</span>
+                    <span className="text-xs font-extrabold text-slate-800">
                       {simulationActive ? simParams.wind_speed_kmh : weatherReport.current.wind_speed} km/h
                     </span>
                   </div>
                   <div className="p-1.5 rounded-xl bg-slate-50 text-center">
-                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Rain Vol</span>
-                    <span className="text-[11px] font-extrabold text-slate-800">
+                    <span className="text-xs font-bold text-slate-400 block uppercase">Rain Vol</span>
+                    <span className="text-xs font-extrabold text-slate-800">
                       {simulationActive ? simParams.rain_intensity_mm : weatherReport.current.rain_1h} mm/h
                     </span>
                   </div>
                   <div className="p-1.5 rounded-xl bg-slate-50 text-center">
-                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Clouds</span>
-                    <span className="text-[11px] font-extrabold text-slate-800">
+                    <span className="text-xs font-bold text-slate-400 block uppercase">Clouds</span>
+                    <span className="text-xs font-extrabold text-slate-800">
                       {simulationActive ? (simParams.rain_intensity_mm > 0 ? 100 : 15) : weatherReport.current.clouds}%
                     </span>
                   </div>
                   <div className="p-1.5 rounded-xl bg-slate-50 text-center">
-                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Min / Max</span>
-                    <span className="text-[11px] font-extrabold text-slate-800">
+                    <span className="text-xs font-bold text-slate-400 block uppercase">Min / Max</span>
+                    <span className="text-xs font-extrabold text-slate-800">
                       {simulationActive ? `${simParams.temperature_c - 4}° / ${simParams.temperature_c + 3}°` : `${weatherReport.current.temp_min}° / ${weatherReport.current.temp_max}°`}
                     </span>
                   </div>
                   <div className="p-1.5 rounded-xl bg-slate-50 text-center">
-                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Pressure</span>
-                    <span className="text-[11px] font-extrabold text-slate-800">
+                    <span className="text-xs font-bold text-slate-400 block uppercase">Pressure</span>
+                    <span className="text-xs font-extrabold text-slate-800">
                       {weatherReport.current.pressure} hPa
                     </span>
                   </div>
                   <div className="p-1.5 rounded-xl bg-slate-50 text-center">
-                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Visibility</span>
-                    <span className="text-[11px] font-extrabold text-slate-800">
+                    <span className="text-xs font-bold text-slate-400 block uppercase">Visibility</span>
+                    <span className="text-xs font-extrabold text-slate-800">
                       {simulationActive && simParams.rain_intensity_mm > 30 ? '1.5 km' : `${(weatherReport.current.visibility / 1000).toFixed(1)} km`}
                     </span>
                   </div>
@@ -1164,7 +1163,7 @@ export default function WeatherDigitalTwinPage() {
             )}
 
             {/* 3. List of Impacted Entities (dynamically backed by simulation results) */}
-            <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-[220px] overflow-y-auto overscroll-contain pr-1" data-lenis-prevent="true">
               {simulationResult.impacted_entities.map((simEntity, idx) => {
                 const isSelected = highlightedItemId === simEntity.itemId;
                 const isSevere = simEntity.simulatedRisk === 'severe';
@@ -1185,15 +1184,15 @@ export default function WeatherDigitalTwinPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2 mb-1.5">
-                      <span className="text-[10px] font-extrabold uppercase tracking-wide text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                      <span className="text-xs font-extrabold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
                         Stop {idx + 1} • {simEntity.itemType}
                       </span>
-                      <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
+                      <span className={`text-xs font-extrabold px-2.5 py-1 rounded-full ${
                         isSevere
-                          ? 'bg-red-100 text-red-800 border border-blue-300'
+                          ? 'bg-red-50 text-red-600 border border-red-200'
                           : isModerate
-                          ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                          : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                          : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                       }`}>
                         {isSevere ? `Alert +${simEntity.transitDelayMinutes}m` : isModerate ? `Buffer +${simEntity.transitDelayMinutes}m` : 'Normal Envelope'}
                       </span>
@@ -1203,13 +1202,13 @@ export default function WeatherDigitalTwinPage() {
                       {simEntity.itemLabel}
                     </div>
 
-                    <div className="text-[11px] text-slate-600 mt-1 line-clamp-2">
+                    <div className="text-xs text-slate-600 mt-1 line-clamp-2">
                       {simEntity.operationalStatus}
                     </div>
 
-                    <div className="flex items-center justify-between text-[10px] font-semibold text-slate-400 pt-2 mt-2 border-t border-slate-100">
+                    <div className="flex items-center justify-between text-xs font-semibold text-slate-400 pt-2 mt-2 border-t border-slate-100">
                       <span>Mitigation: {simEntity.rescheduleRecommended ? 'Reschedule Proposed' : 'Buffer Applied'}</span>
-                      <span className="text-indigo-600 flex items-center gap-0.5 hover:underline">
+                      <span className="text-blue-600 flex items-center gap-0.5 hover:underline">
                         Focus on Map <ArrowUpRight className="w-3 h-3" />
                       </span>
                     </div>
@@ -1229,8 +1228,8 @@ export default function WeatherDigitalTwinPage() {
             
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-white/10 text-indigo-300 border border-white/10">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-white/10 text-blue-300 border border-white/10">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-400" />
                   Ecosystem Impact Engine
                 </span>
                 
@@ -1238,7 +1237,7 @@ export default function WeatherDigitalTwinPage() {
                   (simulationActive ? simulationResult.ecosystem_risk_level : weatherReport.impact_assessment.risk_level) === 'severe'
                     ? 'bg-blue-500/10 text-blue-300 border border-blue-500/40'
                     : (simulationActive ? simulationResult.ecosystem_risk_level : weatherReport.impact_assessment.risk_level) === 'high'
-                    ? 'bg-orange-500/20 text-orange-300 border border-orange-500/40'
+                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                     : (simulationActive ? simulationResult.ecosystem_risk_level : weatherReport.impact_assessment.risk_level) === 'moderate'
                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
                     : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
@@ -1262,11 +1261,11 @@ export default function WeatherDigitalTwinPage() {
             {/* 4 Cascading Domain Impacts */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="p-3.5 rounded-2xl bg-white/10 border border-white/10 shadow-2xs space-y-1">
-                <div className="flex items-center gap-2 text-xs font-bold text-teal-300">
-                  <Car className="w-4 h-4 text-teal-400" />
+                <div className="flex items-center gap-2 text-xs font-bold text-blue-300">
+                  <Car className="w-4 h-4 text-blue-400" />
                   <span>Transit & Road Corridors</span>
                 </div>
-                <p className="text-[11px] text-slate-300 leading-tight">
+                <p className="text-xs text-slate-300 leading-normal">
                   {simulationActive && simulationResult.transit_disruption_index > 50
                     ? `Convoy delays of +${Math.round(simulationResult.transit_disruption_index * 1.2)}m. Mountain passes face icing and reduced passability.`
                     : 'High-altitude mountain roads & transit lines report normal passability. Mountain passes operating on standard schedule.'}
@@ -1274,11 +1273,11 @@ export default function WeatherDigitalTwinPage() {
               </div>
 
               <div className="p-3.5 rounded-2xl bg-white/10 border border-white/10 shadow-2xs space-y-1">
-                <div className="flex items-center gap-2 text-xs font-bold text-indigo-300">
-                  <Compass className="w-4 h-4 text-indigo-400" />
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-200">
+                  <Compass className="w-4 h-4 text-blue-400" />
                   <span>Outdoor Attractions</span>
                 </div>
-                <p className="text-[11px] text-slate-300 leading-tight">
+                <p className="text-xs text-slate-300 leading-normal">
                   {simulationActive && simulationResult.attraction_demand_shift < -40
                     ? `Outdoor demand down by ${simulationResult.attraction_demand_shift}%. Swapping to sheltered museums and heritage centers recommended.`
                     : 'Clear visibility and low precipitation provide optimal conditions for viewpoints, monasteries, and outdoor walks.'}
@@ -1290,7 +1289,7 @@ export default function WeatherDigitalTwinPage() {
                   <UtensilsCrossed className="w-4 h-4 text-amber-400" />
                   <span>Dining & Cafe Demand</span>
                 </div>
-                <p className="text-[11px] text-slate-300 leading-tight">
+                <p className="text-xs text-slate-300 leading-normal">
                   {simulationActive && simulationResult.dining_indoor_surge > 50
                     ? `Outdoor seating closed. Indoor cafe demand surged by +${simulationResult.dining_indoor_surge}% with 30m table wait times.`
                     : 'Open-air dining active. Indoor surge buffer at baseline (+0% rainfall redirection).'}
@@ -1298,9 +1297,11 @@ export default function WeatherDigitalTwinPage() {
               </div>
 
               <div className="p-3.5 rounded-2xl bg-white/10 border border-white/10 shadow-2xs space-y-1">
-                <Hotel className="w-4 h-4 text-purple-400" />
-                <span>Hospitality & Stays</span>
-                <p className="text-[11px] text-slate-300 leading-tight">
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-200">
+                  <Hotel className="w-4 h-4 text-amber-400" />
+                  <span>Hospitality & Stays</span>
+                </div>
+                <p className="text-xs text-slate-300 leading-normal">
                   {simulationActive && simParams.temperature_c < 2
                     ? `Radiant underfloor heating and oxygen concentrators operating at peak capacity (+${simulationResult.hotel_capacity_strain}% load).`
                     : `Standard check-in velocity. Heating amenities ready for night lows of ${weatherReport.current.temp_min}°C.`}
@@ -1310,7 +1311,7 @@ export default function WeatherDigitalTwinPage() {
 
             {/* Recommendations */}
             <div className="pt-2 border-t border-white/10">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-xs font-bold text-slate-400">
                 {simulationActive ? 'Simulated Digital Twin Actions:' : 'Automated Digital Twin Actions:'}
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1.5 text-xs text-slate-200">
@@ -1344,11 +1345,11 @@ export default function WeatherDigitalTwinPage() {
             {weatherReport.forecast.slice(0, 5).map((f) => (
               <div
                 key={f.date}
-                className="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-indigo-300 hover:bg-white transition-all shadow-2xs space-y-3"
+                className="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-blue-300 hover:bg-white transition-all shadow-2xs space-y-3"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-bold text-slate-900">{f.day_name}</span>
-                  <span className="text-[11px] font-medium text-slate-400">{formatDayDate(f.date)}</span>
+                  <span className="text-xs font-medium text-slate-400">{formatDayDate(f.date)}</span>
                 </div>
 
                 <div className="flex items-center justify-between py-1">
@@ -1362,7 +1363,7 @@ export default function WeatherDigitalTwinPage() {
                     )}
                     <div>
                       <span className="text-xs font-bold text-slate-800 block">{f.condition}</span>
-                      <span className="text-[10px] text-slate-400 capitalize">{f.description}</span>
+                      <span className="text-xs text-slate-400 capitalize">{f.description}</span>
                     </div>
                   </div>
                   <div className="text-right">
@@ -1372,8 +1373,8 @@ export default function WeatherDigitalTwinPage() {
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-200/60">
-                  <span className="flex items-center gap-1 font-semibold text-sky-700">
-                    <Droplets className="w-3 h-3 text-sky-500" />
+                  <span className="flex items-center gap-1 font-semibold text-blue-700">
+                    <Droplets className="w-3 h-3 text-blue-500" />
                     {Math.round(f.pop * 100)}% rain
                   </span>
                   <span className="flex items-center gap-1 text-slate-600">

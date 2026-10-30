@@ -713,8 +713,13 @@ export default function SettlementRouterPage() {
 
       {/* Shared Modals */}
       {showAddRefundModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl border border-slate-200">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4" data-lenis-prevent="true">
+          <div
+            role="dialog"
+            aria-modal="true"
+            data-lenis-prevent="true"
+            className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl border border-slate-200 max-h-[90vh] overflow-y-auto overscroll-contain"
+          >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-base font-bold text-slate-900">Add Vendor Refund Claim</h3>
               <X size={18} onClick={() => setShowAddRefundModal(false)} className="cursor-pointer text-slate-400 hover:text-slate-600" />
@@ -780,8 +785,13 @@ export default function SettlementRouterPage() {
       )}
 
       {showAddDisputeModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl border border-slate-200">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4" data-lenis-prevent="true">
+          <div
+            role="dialog"
+            aria-modal="true"
+            data-lenis-prevent="true"
+            className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl border border-slate-200 max-h-[90vh] overflow-y-auto overscroll-contain"
+          >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-base font-bold text-slate-900">Flag Dispute</h3>
               <X size={18} onClick={() => setShowAddDisputeModal(false)} className="cursor-pointer text-slate-400 hover:text-slate-600" />
@@ -830,8 +840,13 @@ export default function SettlementRouterPage() {
       )}
 
       {showAddVoucherModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl border border-slate-200">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4" data-lenis-prevent="true">
+          <div
+            role="dialog"
+            aria-modal="true"
+            data-lenis-prevent="true"
+            className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl border border-slate-200 max-h-[90vh] overflow-y-auto overscroll-contain"
+          >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-base font-bold text-slate-900">Add Voucher</h3>
               <X size={18} onClick={() => setShowAddVoucherModal(false)} className="cursor-pointer text-slate-400 hover:text-slate-600" />
@@ -891,10 +906,14 @@ export default function SettlementRouterPage() {
       {selectedQRTransfer && (
         <div
           className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+          data-lenis-prevent="true"
           onClick={() => setSelectedQRTransfer(null)}
         >
           <div
-            className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200 text-center max-w-xs w-full"
+            role="dialog"
+            aria-modal="true"
+            data-lenis-prevent="true"
+            className="bg-white rounded-2xl p-6 shadow-xl border border-slate-200 text-center max-w-xs w-full max-h-[90vh] overflow-y-auto overscroll-contain"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">

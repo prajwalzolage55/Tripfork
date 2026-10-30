@@ -6,7 +6,7 @@ import { getTrip } from '@/lib/db';
 import { useAuth } from '@/components/AuthProvider';
 import type { Trip } from '@/lib/types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ReactLenis } from 'lenis/react';
+
 import {
   Map, Receipt, Users, User, ArrowLeft, Copy, Check, History,
   GitFork, Scale, Network, Sparkles, ArrowRightLeft,
@@ -159,7 +159,7 @@ export default function TripLayoutClient({ children }: { children: React.ReactNo
   }
 
   return (
-    <ReactLenis root>
+    <>
       <div className="min-h-screen flex font-['Inter'] relative" style={{ backgroundColor: COLORS.offWhite, color: COLORS.burgundy }}>
         
         {/* Mobile Backdrop */}
@@ -422,6 +422,6 @@ export default function TripLayoutClient({ children }: { children: React.ReactNo
           </div>
         </main>
       </div>
-    </ReactLenis>
+    </>
   );
 }

@@ -19,15 +19,6 @@ import type {
 import { motion, AnimatePresence } from 'framer-motion';
 import { recalculateDaySequence, ALTERNATIVE_LOCATIONS } from '@/lib/itinerary-recalculate';
 import dynamic from 'next/dynamic';
-
-const ItineraryMap = dynamic(() => import('@/components/ItineraryMap'), {
-  ssr: false,
-  loading: () => (
-    <div className="w-full h-full min-h-[350px] rounded-2xl bg-slate-100 animate-pulse flex items-center justify-center text-xs font-semibold text-slate-400">
-      Loading interactive map...
-    </div>
-  ),
-});
 import { geocodeLocation, isSampleActivity } from '@/lib/geocoding';
 import { appendEvent } from '@/lib/ledger';
 import { getDestinationSocialSignals } from '@/lib/social-signals';
@@ -37,8 +28,23 @@ import {
   ChevronDown, ChevronUp, Clock, AlertTriangle, Sparkles, Navigation,
   Compass, MapPin, RefreshCw, Sun, CloudRain, ShieldAlert,
   ArrowUp, ArrowDown, Map as MapIcon, Columns, CalendarDays, CheckCircle2,
-  Copy, Droplets, Wind, Zap, Thermometer, Cloud
+  Copy, Droplets, Wind, Zap, Thermometer, Cloud, Bot
 } from 'lucide-react';
+
+const ItineraryMap = dynamic(() => import('@/components/ItineraryMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full min-h-[350px] rounded-2xl bg-slate-100 animate-pulse flex items-center justify-center text-xs font-semibold text-slate-400">
+      Loading interactive map...
+    </div>
+  ),
+});
+const AIPlaceDiscoveryModal = dynamic(() => import('@/components/AIPlaceDiscoveryModal'), {
+  ssr: false,
+});
+const AITravelAssistant = dynamic(() => import('@/components/AITravelAssistant'), {
+  ssr: false,
+});
 
 const COLORS = {
   burgundy: '#0f172a',
@@ -164,6 +170,10 @@ export default function ItineraryPage() {
   // Swap / Alternatives Modal State
   const [swappingItem, setSwappingItem] = useState<ItineraryItem | null>(null);
   const [movingDayItem, setMovingDayItem] = useState<ItineraryItem | null>(null);
+
+  // Gemini AI Modals
+  const [showPlaceDiscoveryModal, setShowPlaceDiscoveryModal] = useState(false);
+  const [showAiAssistant, setShowAiAssistant] = useState(false);
 
   const socialSignals = useMemo(
     () => getDestinationSocialSignals(trip?.destination || trip?.name || '', null),
@@ -527,6 +537,63 @@ export default function ItineraryPage() {
       await loadData();
     } catch (err: any) {
       alert('Error swapping activity: ' + (err?.message || 'Unknown error'));
+    }
+  }
+
+  // AI Assistant Item Adder
+  async function handleAddAIAssistantItem(suggested: {
+    label: string;
+    dayId?: string;
+    type: 'activity' | 'dining' | 'hotel' | 'transfer';
+    cost: number;
+    description: string;
+    locationName?: string;
+    latitude?: number;
+    longitude?: number;
+  }) {
+    try {
+      const targetDay = days.find(d => d.id === suggested.dayId) || days[0];
+      const baseDate = targetDay?.day_date || new Date().toISOString().split('T')[0];
+
+      let locId: string | null = null;
+      if (suggested.latitude && suggested.longitude) {
+        const locRef = doc(collection(db, 'locations'));
+        locId = locRef.id;
+        await setDoc(locRef, {
+          id: locId,
+          name: suggested.locationName || suggested.label,
+          category: suggested.type === 'dining' ? 'restaurant' : 'attraction',
+          latitude: suggested.latitude,
+          longitude: suggested.longitude,
+          recommended_duration: '90 minutes',
+          entry_fee: 0,
+          estimated_spending: suggested.cost || 0,
+        });
+      }
+
+      const itemRef = doc(collection(db, 'itinerary_items'));
+      await setDoc(itemRef, {
+        id: itemRef.id,
+        trip_id: tripId,
+        itinerary_day_id: targetDay?.id || null,
+        location_id: locId,
+        type: suggested.type || 'activity',
+        label: suggested.label,
+        start_time: `${baseDate}T11:00:00.000Z`,
+        end_time: `${baseDate}T13:00:00.000Z`,
+        cost: suggested.cost || 0,
+        default_split_type: 'equal',
+        status: 'active',
+        short_description: suggested.description || '',
+        estimated_travel_time: '~15 minutes',
+        travel_distance_km: 5,
+        conflicts: [],
+      });
+
+      await loadData();
+    } catch (err: any) {
+      console.error('Error adding AI suggested item:', err);
+      alert('Error adding item: ' + err.message);
     }
   }
 
@@ -923,6 +990,28 @@ export default function ItineraryPage() {
               </button>
             )}
 
+            {/* AI Place Suggestions Button */}
+            <button
+              type="button"
+              onClick={() => setShowPlaceDiscoveryModal(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 transition-all shadow-xs cursor-pointer"
+              title="Discover & accept/reject recommended places using Gemini AI"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              <span>AI Place Suggestions</span>
+            </button>
+
+            {/* AI Travel Companion Chat Button */}
+            <button
+              type="button"
+              onClick={() => setShowAiAssistant(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition-all shadow-xs cursor-pointer"
+              title="Chat with your Gemini AI Travel Companion"
+            >
+              <Bot className="w-3.5 h-3.5 text-indigo-600" />
+              <span>AI Companion</span>
+            </button>
+
             {/* Add Activity */}
             <button
               type="button"
@@ -1106,10 +1195,17 @@ export default function ItineraryPage() {
                 <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                   <button
                     onClick={() => openCreateModal()}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-md shadow-indigo-500/20"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-900 text-white hover:bg-slate-800 transition shadow-md"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add Activity & Map Pin</span>
+                  </button>
+                  <button
+                    onClick={() => setShowPlaceDiscoveryModal(true)}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:from-indigo-700 hover:to-violet-700 transition shadow-md shadow-indigo-500/20 cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4 text-amber-300" />
+                    <span>Explore Places with Gemini AI</span>
                   </button>
                 </div>
               </div>
@@ -1460,6 +1556,9 @@ export default function ItineraryPage() {
               initial="hidden"
               animate="visible"
               exit="exit"
+              role="dialog"
+              aria-modal="true"
+              data-lenis-prevent="true"
               className="relative w-full max-w-lg max-h-[85vh] bg-white rounded-[2rem] shadow-2xl border flex flex-col z-10 overflow-hidden"
               style={{ borderColor: COLORS.cream }}
               onClick={(e) => e.stopPropagation()}
@@ -1481,7 +1580,7 @@ export default function ItineraryPage() {
                 </button>
               </div>
 
-              <div className="p-6 overflow-y-auto space-y-4 flex-1 overscroll-contain" data-lenis-prevent>
+              <div className="p-6 overflow-y-auto space-y-4 flex-1 min-h-0 overscroll-contain" data-lenis-prevent="true">
                 <p className="text-xs text-gray-500 font-medium">
                   Select an alternative recommendation below. The itinerary will automatically replace this activity, recompute travel buffers, and update the route line.
                 </p>
@@ -1558,6 +1657,9 @@ export default function ItineraryPage() {
               initial="hidden"
               animate="visible"
               exit="exit"
+              role="dialog"
+              aria-modal="true"
+              data-lenis-prevent="true"
               className="relative w-full max-w-sm max-h-[85vh] bg-white rounded-[2rem] shadow-2xl border flex flex-col z-10 overflow-hidden"
               style={{ borderColor: COLORS.cream }}
               onClick={(e) => e.stopPropagation()}
@@ -1576,7 +1678,7 @@ export default function ItineraryPage() {
                 </button>
               </div>
 
-              <div className="p-6 overflow-y-auto space-y-3 flex-1 overscroll-contain" data-lenis-prevent>
+              <div className="p-6 overflow-y-auto space-y-3 flex-1 min-h-0 overscroll-contain" data-lenis-prevent="true">
                 <p className="text-xs text-gray-500 font-medium">
                   Choose which day you want to shift &ldquo;{movingDayItem.label}&rdquo; to:
                 </p>
@@ -1630,7 +1732,9 @@ export default function ItineraryPage() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              data-lenis-prevent
+              role="dialog"
+              aria-modal="true"
+              data-lenis-prevent="true"
               className="fixed top-0 right-0 bottom-0 z-50 w-full sm:w-[400px] max-w-full bg-white shadow-[-16px_0_40px_rgba(0,0,0,0.15)] border-l flex flex-col overflow-hidden"
               style={{ borderColor: COLORS.cream }}
               onClick={(e) => e.stopPropagation()}
@@ -1659,11 +1763,11 @@ export default function ItineraryPage() {
               </div>
 
               {/* Form Body - Clean, Smooth & Scrollable */}
-              <form onSubmit={handleSaveItem} className="flex-1 flex flex-col min-h-0 overflow-hidden" data-lenis-prevent>
+              <form onSubmit={handleSaveItem} className="flex-1 flex flex-col min-h-0 overflow-hidden" data-lenis-prevent="true">
                 <div 
-                  className="overflow-y-auto px-5 py-4 space-y-3.5 flex-1 overscroll-contain touch-pan-y"
+                  className="overflow-y-auto px-5 py-4 space-y-3.5 flex-1 min-h-0 overscroll-contain touch-pan-y"
                   style={{ WebkitOverflowScrolling: 'touch' }}
-                  data-lenis-prevent
+                  data-lenis-prevent="true"
                 >
                   
                   {/* Title */}
@@ -1924,6 +2028,32 @@ export default function ItineraryPage() {
           </>
         )}
       </AnimatePresence>
+
+      {/* Gemini AI Place Discovery Modal */}
+      <AIPlaceDiscoveryModal
+        isOpen={showPlaceDiscoveryModal}
+        onClose={() => setShowPlaceDiscoveryModal(false)}
+        trip={trip}
+        preferences={preferences}
+        days={days}
+        onPlacesAdded={async () => {
+          await loadData();
+        }}
+      />
+
+      {/* Gemini AI Travel Assistant Companion */}
+      <AITravelAssistant
+        trip={trip}
+        preferences={preferences}
+        days={days}
+        items={items}
+        isOpen={showAiAssistant}
+        onClose={() => setShowAiAssistant(false)}
+        onAddSuggestedItem={handleAddAIAssistantItem}
+        onRegenerate={async () => {
+          await loadData();
+        }}
+      />
     </motion.div>
   );
 }

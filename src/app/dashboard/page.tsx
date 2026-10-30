@@ -6,7 +6,7 @@ import { useAuth } from '@/components/AuthProvider';
 import { getTrips, createTrip as dbCreateTrip, joinTripByCode } from '@/lib/db';
 import type { Trip } from '@/lib/types';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
-import { ReactLenis } from 'lenis/react';
+
 import {
   Plane, Plus, LogIn, LogOut, MapPin, Calendar, Copy, Check,
   Loader2, Users, Compass, ArrowRight, Sparkles, Map, User,
@@ -190,7 +190,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <ReactLenis root>
+    <>
       <div className="min-h-screen flex font-['Inter'] relative" style={{ backgroundColor: COLORS.offWhite, color: COLORS.burgundy }}>
         
         {/* Mobile Backdrop */}
@@ -633,7 +633,10 @@ export default function DashboardPage() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="relative w-full max-w-lg p-8 rounded-[2rem] shadow-2xl bg-white border"
+                role="dialog"
+                aria-modal="true"
+                data-lenis-prevent="true"
+                className="relative w-full max-w-lg p-8 rounded-[2rem] shadow-2xl bg-white border max-h-[90vh] overflow-y-auto overscroll-contain"
                 style={{ borderColor: COLORS.cream }}
               >
                 <h2 className="text-3xl font-black mb-6" style={{ color: COLORS.burgundy }}>Create a New Trip</h2>
@@ -705,7 +708,10 @@ export default function DashboardPage() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="relative w-full max-w-md p-8 rounded-[2rem] shadow-2xl bg-white border"
+                role="dialog"
+                aria-modal="true"
+                data-lenis-prevent="true"
+                className="relative w-full max-w-md p-8 rounded-[2rem] shadow-2xl bg-white border max-h-[90vh] overflow-y-auto overscroll-contain"
                 style={{ borderColor: COLORS.cream }}
               >
                 <h2 className="text-3xl font-black mb-6" style={{ color: COLORS.burgundy }}>Join a Trip</h2>
@@ -746,6 +752,6 @@ export default function DashboardPage() {
 
       </main>
       </div>
-    </ReactLenis>
+    </>
   );
 }

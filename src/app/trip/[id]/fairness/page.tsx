@@ -1017,8 +1017,13 @@ export default function FairnessConstitutionPage() {
 
       {/* ─── Add Custom Rule Modal ─── */}
       {showCustomModal && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl p-6 space-y-4">
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" data-lenis-prevent="true">
+          <div
+            role="dialog"
+            aria-modal="true"
+            data-lenis-prevent="true"
+            className="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto overscroll-contain"
+          >
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <Plus size={18} className="text-indigo-600" />

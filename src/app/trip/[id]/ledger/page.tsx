@@ -851,9 +851,15 @@ export default function TripLedgerPage() {
 
       {/* ─── Trace Modal ("Why Do I Owe This?") ─── */}
       {selectedTraceMember && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedTraceMember(null)}>
-          <div className="bg-white rounded-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto border border-slate-200 shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
-            <div className="p-4 border-b border-slate-200 flex items-center justify-between">
+        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" data-lenis-prevent="true" onClick={() => setSelectedTraceMember(null)}>
+          <div
+            role="dialog"
+            aria-modal="true"
+            data-lenis-prevent="true"
+            className="bg-white rounded-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto overscroll-contain border border-slate-200 shadow-2xl flex flex-col"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-slate-200 flex items-center justify-between shrink-0">
               <div>
                 <span className="text-[11px] uppercase font-bold text-indigo-600 tracking-wider">
                   Event Sequence Replay

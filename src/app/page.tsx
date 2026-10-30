@@ -1515,8 +1515,13 @@ export default function Home() {
 
       {/* ── INTERACTIVE TRIP PLANNER MODAL ── */}
       {plannerModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl relative overflow-hidden border border-stone-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm animate-in fade-in duration-200" data-lenis-prevent="true">
+          <div
+            role="dialog"
+            aria-modal="true"
+            data-lenis-prevent="true"
+            className="bg-white rounded-3xl max-w-lg w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto overscroll-contain border border-stone-100"
+          >
             {/* Close Button */}
             <button
               onClick={() => setPlannerModalOpen(false)}
