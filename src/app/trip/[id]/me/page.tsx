@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useTripId } from '@/lib/trip-routing';
+import { useTripId, getTripPath } from '@/lib/trip-routing';
+import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -90,12 +91,11 @@ export default function PersonalImpactLensPage() {
 
   useEffect(() => {
     if (state?.members && state.members.length > 0) {
-      const match = state.members.find(m => m.memberId === user?.id) || state.members[0];
-      if (!currentMember || !state.members.find(m => m.memberId === currentMember.memberId)) {
-        setCurrentMember(match);
-      }
+      // Strictly locked to the authenticated user's own profile; no viewing other profiles
+      const match = state.members.find(m => m.userId === user?.id || m.memberId === user?.id) || state.members[0];
+      setCurrentMember(match);
     }
-  }, [state, user?.id, currentMember]);
+  }, [state, user?.id]);
 
   useEffect(() => {
     if (currentMember) {
@@ -149,16 +149,25 @@ export default function PersonalImpactLensPage() {
           <p style={{ color: COLORS.burgundyLight, fontSize: '0.875rem', margin: 0 }}>Privacy-scoped view showing only your portion of the itinerary, costs, and exposure.</p>
         </div>
         
-        {state && state.members.length > 0 && (
-          <div style={{ padding: '0.75rem 1rem', borderRadius: '0.75rem', background: 'white', border: `1px solid ${COLORS.cream}`, boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
-            <div style={{ fontSize: '0.625rem', fontWeight: 700, color: '#888', textTransform: 'uppercase', marginBottom: '0.375rem' }}>Simulating View For</div>
-            <select
-              value={currentMember?.memberId || ''}
-              onChange={e => { const m = state.members.find(x => x.memberId === e.target.value); if (m) setCurrentMember(m); }}
-              style={{ padding: '0.375rem 0.75rem', borderRadius: '0.5rem', border: `1px solid ${COLORS.cream}`, fontWeight: 700, fontSize: '0.8rem', color: COLORS.burgundy, outline: 'none' }}
+        {currentMember && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.5rem 0.875rem', borderRadius: '0.75rem', background: 'white', border: `1px solid ${COLORS.cream}`, boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: COLORS.burgundy, color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem' }}>
+                {currentMember.displayName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <div style={{ fontSize: '0.825rem', fontWeight: 800, color: COLORS.burgundy }}>{currentMember.displayName}</div>
+                <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#059669', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} /> Your Profile
+                </div>
+              </div>
+            </div>
+            <Link
+              href={getTripPath(tripId, 'group')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.55rem 0.95rem', borderRadius: '0.75rem', background: COLORS.burgundy, color: 'white', fontSize: '0.75rem', fontWeight: 700, textDecoration: 'none', transition: 'all 0.2s', boxShadow: '0 2px 6px rgba(15,23,42,0.1)' }}
             >
-              {state.members.map(m => <option key={m.memberId} value={m.memberId}>{m.displayName}</option>)}
-            </select>
+              <Users size={14} /> View Group Dashboard &rarr;
+            </Link>
           </div>
         )}
       </div>
@@ -176,7 +185,7 @@ export default function PersonalImpactLensPage() {
                 {simulatedPrivacyScope.shareTotalSpend ? 'Shared' : 'Private'}
               </span>
             </div>
-            <p style={{ fontSize: '0.75rem', color: COLORS.burgundyLight, margin: 0 }}>Others see aggregate group totals. Your individual data is visible only to you.</p>
+            <p style={{ fontSize: '0.75rem', color: COLORS.burgundyLight, margin: 0 }}>This personal dashboard shows only your individual obligations. For complete group balances and member settlements, use Group View.</p>
           </div>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>

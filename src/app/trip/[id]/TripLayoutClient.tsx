@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import {
   Map, Receipt, Users, User, ArrowLeft, Copy, Check, History,
-  GitFork, Scale, Network, Sparkles, ArrowRightLeft,
+  GitFork, Scale, Network, Sparkles,
   Menu, X, ChevronLeft, ChevronRight, MapPin, CloudSun,
   Sun, CloudRain, Snowflake, Smartphone
 } from 'lucide-react';
@@ -33,7 +33,7 @@ const NAV_ITEMS = [
   { key: 'ledger', label: 'Ledger Stream', icon: History },
   { key: 'fairness', label: 'Constitution', icon: Scale },
   { key: 'shapley', label: 'Shapley Split', icon: Sparkles },
-  { key: 'router', label: 'Settlement Router', icon: ArrowRightLeft },
+
   { key: 'graph', label: 'Event Graph', icon: Network },
   { key: 'sms-reader', label: 'SMS Reader', icon: Smartphone, badge: 'NEW' },
   { key: 'group', label: 'Group', icon: Users },
