@@ -110,10 +110,6 @@ export default function PersonalImpactLensPage() {
     }
   }, [currentMember, events, tripId, state?.constitution]);
 
-  const togglePrivacySetting = (key: string) => {
-    setSimulatedPrivacyScope(prev => ({ ...prev, [key]: !(prev as Record<string, any>)[key] }));
-  };
-
   const profile: PersonalImpactProfile | null = useMemo(() => {
     if (!state || !currentMember) return null;
     return computePersonalImpactProfile(state, currentMember.memberId, simulatedPrivacyScope);
@@ -171,29 +167,6 @@ export default function PersonalImpactLensPage() {
           </div>
         )}
       </div>
-
-      {/* ─── Privacy Banner ─── */}
-      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', padding: '1.25rem', borderRadius: '1rem', background: `linear-gradient(135deg, ${COLORS.burgundyPale} 0%, ${COLORS.rosePale} 100%)`, border: `1px solid ${COLORS.cream}`, marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ width: 44, height: 44, borderRadius: '0.75rem', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${COLORS.cream}` }}>
-            {simulatedPrivacyScope.shareTotalSpend ? <Share2 size={20} style={{ color: '#059669' }} /> : <Shield size={20} style={{ color: COLORS.burgundy }} />}
-          </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, color: COLORS.burgundy, margin: 0 }}>Privacy Scope Active</h3>
-              <span style={{ fontSize: '0.65rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: '9999px', background: simulatedPrivacyScope.shareTotalSpend ? '#d1fae5' : 'white', color: simulatedPrivacyScope.shareTotalSpend ? '#065f46' : COLORS.burgundy, border: `1px solid ${COLORS.cream}` }}>
-                {simulatedPrivacyScope.shareTotalSpend ? 'Shared' : 'Private'}
-              </span>
-            </div>
-            <p style={{ fontSize: '0.75rem', color: COLORS.burgundyLight, margin: 0 }}>This personal dashboard shows only your individual obligations. For complete group balances and member settlements, use Group View.</p>
-          </div>
-        </div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button onClick={() => togglePrivacySetting('shareTotalSpend')} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 0.875rem', borderRadius: '0.625rem', background: simulatedPrivacyScope.shareTotalSpend ? COLORS.burgundy : 'white', color: simulatedPrivacyScope.shareTotalSpend ? 'white' : COLORS.burgundy, fontSize: '0.75rem', fontWeight: 700, border: `1px solid ${COLORS.cream}`, cursor: 'pointer', transition: 'all 0.2s' }}>
-            {simulatedPrivacyScope.shareTotalSpend ? <Eye size={14} /> : <EyeOff size={14} />} {simulatedPrivacyScope.shareTotalSpend ? 'Totals Public' : 'Totals Private'}
-          </button>
-        </div>
-      </motion.div>
 
       {/* ─── Metric Cards ─── */}
       {profile && (
